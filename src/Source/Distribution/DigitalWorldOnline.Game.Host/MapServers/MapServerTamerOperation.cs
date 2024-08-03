@@ -976,15 +976,16 @@ namespace DigitalWorldOnline.GameHost
                 client.Send(new ChatMessagePacket(elementmessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Name, receiverName));
             }
 
-            if (criticalDamage > baseDamage)
-            {
-                string crit = $"I dealt {Math.Floor(criticalDamage)} Critical damage";
-                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
-            }
-
             //client.Send(new SystemMessagePacket($"levelBonusDamage:{levelBonusDamage}"));
 
             double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage;
+
+            if (totalDamage != 0)
+            {
+                string crit = $"I dealt {Math.Floor(totalDamage)} damage";
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
+            }
+
             if (criticalDamage > 0)
             {
                 totalDamage += criticalDamage - baseDamage;
