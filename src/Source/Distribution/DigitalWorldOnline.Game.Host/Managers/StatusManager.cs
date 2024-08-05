@@ -2,6 +2,7 @@
 using DigitalWorldOnline.Commons.Enums;
 using DigitalWorldOnline.Commons.Models;
 using DigitalWorldOnline.Commons.Models.Asset;
+using DigitalWorldOnline.Game.Models.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace DigitalWorldOnline.Game.Managers
@@ -68,7 +69,7 @@ namespace DigitalWorldOnline.Game.Managers
             var sizeCr = sizeMultiplier * baseInfo.CTValue + statusInfo.CTValue;
             var finalCr = (int)Math.Floor(sizeCr);
 
-            var baseCd = Int32.Parse(_configuration["GameServer:BaseCriticalDamage"] ?? "0");
+            int baseCd = Int32.Parse(_configuration["Digimon:BaseCriticalDamage"] ?? "0");
             var finalCd = sizeMultiplier < 1 ? baseCd : size / 100;
 
             var sizeDe = sizeMultiplier * baseInfo.DEValue + statusInfo.DEValue;

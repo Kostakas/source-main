@@ -16,6 +16,7 @@ using DigitalWorldOnline.Infraestructure.Repositories.Character;
 using DigitalWorldOnline.Infraestructure.Repositories.Config;
 using DigitalWorldOnline.Infraestructure.Repositories.Routine;
 using DigitalWorldOnline.Infraestructure.Repositories.Server;
+using DigitalWorldOnline.Game.Models.Configuration;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,12 @@ namespace DigitalWorldOnline.Game
 {
     public class Program
     {
+        private readonly IConfiguration _configuration;
+
+        public Program(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Run();
@@ -46,6 +53,11 @@ namespace DigitalWorldOnline.Game
 
             Console.ReadLine();
         }
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<GameConfigurationModel>(_configuration.GetSection("GameConfigs"));
+
+        }
 
         public static IHost CreateHostBuilder(string[] args)
         {
@@ -58,6 +70,10 @@ namespace DigitalWorldOnline.Game
                 .ConfigureServices((context, services) =>
                 {
                     services.AddDbContext<DatabaseContext>();
+
+                    //services.AddOptions<GameConfigurationModel>()
+                    //        .BindConfiguration("GameConfigs")
+                    //        .ValidateOnStart();
 
                     services.AddScoped<IAdminQueriesRepository, AdminQueriesRepository>();
                     services.AddScoped<IAdminCommandsRepository, AdminCommandsRepository>();

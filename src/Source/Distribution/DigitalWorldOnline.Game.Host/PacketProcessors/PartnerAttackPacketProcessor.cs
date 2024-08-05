@@ -8,6 +8,7 @@ using DigitalWorldOnline.Commons.Models.Digimon;
 using DigitalWorldOnline.Commons.Models.Summon;
 using DigitalWorldOnline.Commons.Packets.GameServer.Combat;
 using DigitalWorldOnline.Commons.Utils;
+using Microsoft.Extensions.Configuration;
 using DigitalWorldOnline.GameHost;
 using Serilog;
 using System;
@@ -22,16 +23,20 @@ namespace DigitalWorldOnline.Game.PacketProcessors
         private readonly PvpServer _pvpServer;
         private readonly DungeonsServer _dungeonServer;
         private readonly ILogger _logger;
+        private readonly IConfiguration _Configuration;
 
         public PartnerAttackPacketProcessor(
             MapServer mapServer,
             PvpServer pvpServer,
-            ILogger logger,DungeonsServer dungeonsServer)
+            ILogger logger,
+            DungeonsServer dungeonsServer,
+            IConfiguration configuration)
         {
             _mapServer = mapServer;
             _pvpServer = pvpServer;
             _dungeonServer = dungeonsServer;
             _logger = logger;
+            _Configuration = configuration;
         }
 
         public Task Process(GameClient client, byte[] packetData)
@@ -412,7 +417,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                 #region Hit Damage
                                 var critBonusMultiplier = 0.00;
                                 var blocked = false;
-                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked);
+                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
 
                                 if (finalDmg != 0 && !client.Tamer.GodMode)
                                 {
@@ -712,7 +717,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             #region Hit Damage
                             var critBonusMultiplier = 0.00;
                             var blocked = false;
-                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked);
+                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
 
                             if (finalDmg != 0 && !client.Tamer.GodMode)
                             {
