@@ -1115,33 +1115,34 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
         private async Task IncreaseWarehouseSlots(GameClient client, short itemSlot, ItemModel targetItem)
         {
-            var newSlot = client.Tamer.Warehouse.AddSlot();
+            var newSlot = client.Tamer.Warehouse.AddSlotsAll((byte)targetItem.Amount);
 
             _logger.Verbose($"Character {client.TamerId} used {targetItem.ItemId} to expand warehouse slots to {client.Tamer.Warehouse.Size}.");
 
-            client.Tamer.Inventory.RemoveOrReduceItem(targetItem, 1);
+            client.Tamer.Inventory.RemoveOrReduceItem(targetItem, targetItem.Amount);
 
             await _sender.Send(new UpdateItemCommand(targetItem));
-            await _sender.Send(new AddInventorySlotCommand(newSlot));
+            await _sender.Send(new AddInventorySlotsCommand(newSlot));
 
             client.Send(
                 UtilitiesFunctions.GroupPackets(
                     new ItemConsumeSuccessPacket(client.Tamer.GeneralHandler, itemSlot).Serialize(),
-                    new LoadInventoryPacket(client.Tamer.Warehouse, InventoryTypeEnum.Warehouse).Serialize()
+                    new LoadInventoryPacket(client.Tamer.Warehouse, InventoryTypeEnum.Warehouse).Serialize(),
+                    new LoadInventoryPacket(client.Tamer.Inventory, InventoryTypeEnum.Inventory).Serialize()
                 )
             );
         }
 
         private async Task IncreaseInventorySlots(GameClient client, short itemSlot, ItemModel targetItem)
         {
-            var newSlot = client.Tamer.Inventory.AddSlot();
+            var newSlot = client.Tamer.Inventory.AddSlotsAll((byte)targetItem.Amount);
 
             _logger.Verbose($"Character {client.TamerId} used {targetItem.ItemId} to expand inventory slots to {client.Tamer.Inventory.Size}.");
 
-            client.Tamer.Inventory.RemoveOrReduceItem(targetItem, 1);
+            client.Tamer.Inventory.RemoveOrReduceItem(targetItem, targetItem.Amount);
 
             await _sender.Send(new UpdateItemCommand(targetItem));
-            await _sender.Send(new AddInventorySlotCommand(newSlot));
+            await _sender.Send(new AddInventorySlotsCommand(newSlot));
 
             client.Send(
                 UtilitiesFunctions.GroupPackets(

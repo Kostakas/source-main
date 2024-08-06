@@ -3,6 +3,7 @@ using DigitalWorldOnline.Commons.Enums.ClientEnums;
 using DigitalWorldOnline.Commons.Models.Character;
 using DigitalWorldOnline.Commons.Packets.Chat;
 using DigitalWorldOnline.Commons.Packets.Items;
+using System.Collections.Generic;
 using System.Text;
 
 namespace DigitalWorldOnline.Commons.Models.Base
@@ -70,6 +71,25 @@ namespace DigitalWorldOnline.Commons.Models.Base
             }
 
             return Size;
+        }
+
+        public List<ItemModel> AddSlotsAll(byte amount = 1)
+        {
+            List < ItemModel > newSlots = new List < ItemModel >();
+            for (byte i = 0; i < amount; i++)
+            {
+                var newItemSlot = new ItemModel(Items.Max(x => x.Slot))
+                {
+                    ItemListId = Id
+                    // ItemList = this // Uncomment if needed
+                };
+
+                newSlots.Add(newItemSlot);
+                Items.Add(newItemSlot);
+                Size++;
+            }
+
+            return newSlots;
         }
 
         /// <summary>
