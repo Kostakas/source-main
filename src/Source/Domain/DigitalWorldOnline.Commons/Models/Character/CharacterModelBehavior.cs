@@ -93,7 +93,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
                 {
                     return false; // O Tamer acerta o hit
                 }
-                else if (levelDifference <= 20)
+                else if (levelDifference <= 15)
                 {
                     if (Partner.Level >= TargetMob.Level)
                         return false;
@@ -122,7 +122,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
 
                     var TotalChance = (int)adjustedPercent;
 
-                    if (TotalChance <= 10)
+                    if (TotalChance <= 2)
                         return true;
 
                     return rand.Next(1, 100) >= TotalChance; // Ajuste esse valor conforme necessário
@@ -196,7 +196,8 @@ namespace DigitalWorldOnline.Commons.Models.Character
         public static double CalcularProbabilidadeAcerto(double seuHitRate, int seuNivel, int nivelDoMonstro, double evDoMonstro, double attributeAdvantage)
         {
             double diferencaDeNiveis = seuNivel - nivelDoMonstro;
-            double levelMultiplier = 1 / (1 + Math.Exp(-diferencaDeNiveis / 9.0));
+            //evDoMonstro *= 0.3;
+            double levelMultiplier = 1 / (1 + Math.Exp(-diferencaDeNiveis / 50 ));
             double probabilidade = levelMultiplier * (seuHitRate / evDoMonstro) * attributeAdvantage * 100;
 
             return probabilidade;

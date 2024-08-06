@@ -39,11 +39,11 @@ namespace DigitalWorldOnline.Commons.Models.Config
             var rand = new Random();
 
             double TargetEvasion = (double)Target?.EV;
-            double AttackerHitRate = (double)HTValue;
+            double AttackerHitRate = (double)HTValue * 15;
 
             int levelDifference = Level - Target.Level;
 
-            if (AttackerHitRate > TargetEvasion || levelDifference > 15)
+            if (levelDifference > 15 || AttackerHitRate > TargetEvasion)
             {
                 return false; // O Tamer acerta o hit
             }
@@ -94,7 +94,7 @@ namespace DigitalWorldOnline.Commons.Models.Config
         public static double CalcularProbabilidadeAcerto(double seuHitRate, int seuNivel, int nivelDoMonstro, double evDoMonstro, double attributeAdvantage)
         {
             double diferencaDeNiveis = seuNivel - nivelDoMonstro;
-            double levelMultiplier = 1 / (1 + Math.Exp(-diferencaDeNiveis / 9.0));
+            double levelMultiplier = 1 / (1 + Math.Exp(-diferencaDeNiveis / 55.0));
             double probabilidade = levelMultiplier * (seuHitRate / evDoMonstro) * attributeAdvantage * 100;
 
             return probabilidade;
