@@ -16,7 +16,7 @@
         </MudAppBar>
         <MudDrawer @bind-Open="_drawerOpen" Elevation="3">
             <MudDrawerHeader>
-                <img src="/Images/dso_header.png" width="200px" style="padding-left: 20px;" />
+                <img src="/Images/DigimonHeader.png" width="200px" height="95px" style="padding-left: 10px;" />
             </MudDrawerHeader>
             <NavMenu />
         </MudDrawer>
@@ -33,13 +33,13 @@ else
         <Authorized>
             <MudLayout>
                 <MudAppBar Elevation="3">
-                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
                     <MudSpacer />
-                    <MudIconButton Icon="@Icons.Filled.ExitToApp" Title="Logout" Color="Color.Inherit" Href="logout" />
+                    <MudIconButton Icon="@Icons.Filled.ExitToApp" Title="Logout" Href="logout" />
                 </MudAppBar>
-                <MudDrawer @bind-Open="_drawerOpen" Elevation="3">
+                <MudDrawer @bind-Open="_drawerOpen" Elevation="3" Class="mud-drawer">
                     <MudDrawerHeader>
-                        <img src="/Images/dso_header.png" width="200px" style="padding-left: 20px;" />
+                        <img src="/Images/DigimonHeader.png" width="200px" height="95px" style="padding-left: 10px;" />
                     </MudDrawerHeader>
                     <NavMenu />
                 </MudDrawer>
@@ -74,9 +74,9 @@ else
     {
         Palette = new Palette()
         {
-            AppbarBackground = "#fbc802",
-            Primary = "#155883",
-            DrawerIcon = "#134d74"
-        }
+                AppbarBackground = "#82817e",
+                Primary = "#155883",
+                DrawerIcon = "#55ecfa"
+            }
     };
 }

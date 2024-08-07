@@ -4,22 +4,24 @@
 <MudSnackbarProvider />
 
 <MudLayout>
+    <div class="background-container"></div>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.False" Style="margin-top:40px;">
-            @Body
-        </MudContainer>
+        <div class="content-container">
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="margin-top:5px;">
+                @Body
+            </MudContainer>
+        </div>
     </MudMainContent>
 </MudLayout>
 
 @code {
-
     private MudTheme _currentTheme = new MudTheme()
         {
             Palette = new Palette()
             {
-                AppbarBackground = "#fbc802",
-                Primary = "#155883",
-                DrawerIcon = "#134d74"
+                AppbarBackground = "#02fb66",
+                Primary = "#fb020e",
+                DrawerIcon = "#02fb66"
             }
         };
 }
