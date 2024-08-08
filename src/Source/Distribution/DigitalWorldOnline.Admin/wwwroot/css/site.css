@@ -76,6 +76,7 @@ a, .btn-link {
     padding: 25px; /* Add padding */
     border-radius: 10px; /* Optional: Add rounded corners */
 }
+
 .custom-button {
     background-color: rgba(255, 75, 80, 0.5) !important;
     color: blue !important; /* White text */
@@ -120,132 +121,355 @@ a, .btn-link {
 }
 
 :root {
-    --page-background: #3e4245; /* Replace with your desired background color */
+    --page-background: black; /* Replace with your desired background color */
     --text-color: #333333; /* Example text color */
-    --appbar-background: orange;
+    --appbar-background: red;
     --primary: orange;
-    --drawer-icon: orange;
+    --drawer-icon: red;
 }
 
 /* Apply the global background color and text color */
 body {
-    background-color: var(--page-background) !important;
-    color: var(--text-color);
-    font-family: 'Arial', sans-serif; /* Example font family */
-    margin: 0;
-    padding: 0;
+    background: black !important; /* Blueish purple gradient */
+    color: var(--text-color) !important; /* Ensure text color is applied */
+    font-family: 'Arial', sans-serif !important; /* Use Arial font */
+    margin: 0 !important; /* Remove default margin */
+    padding: 0 !important; /* Remove default padding */
 }
 
 /* Example styles for headers and paragraphs */
 h1, h2, h3, h4, h5, h6 {
-    color: black;
-    background-color: orange;
+    color: white;
+    background: linear-gradient(45deg, #00FF7F, #00BFFF, #8A2BE2) !important; /* Gradient from green to blue to purple */
     border-radius: 12px !important;
-    padding: 5px 10px !important; /* Padding */
-
+    padding: 10px 20px !important; /* Increased padding for more impact */
+    font-family: 'Poppins', sans-serif !important; /* Flashy, modern font */
+    text-transform: uppercase !important; /* All caps for emphasis */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3) !important; /* Shadow for a flashy effect */
+    letter-spacing: 2px !important; /* Increased letter spacing for a bold appearance */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important; /* Subtle shadow around the headings */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out !important; /* Smooth hover transition */
 }
 
 p {
     color: var(--text-color);
 }
 
-/* Style for MudBlazor components using CSS variables */
-.mud-app-bar {
-    background-color: dimgray !important;
-    color: var(--text-color);
-}
-
 .mud-drawer {
-    border-color: var(--drawer-icon);
-    background-color: black !important;
-    border-top-right-radius: 10px; /* Top right corner */
-    border-bottom-right-radius: 10px; /* Bottom right corner */
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0; /* Hidden by default */
+    overflow-x: hidden;
+    transition: width 0.4s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    display: flex;
+    flex-direction: column;
 }
 
 
 .mud-button-root {
-    background-color: var(--primary) !important;
-    border-radius: 12px !important;
-    padding: 5px 10px !important; /* Padding */
-    color: #fff; /* Ensure text on buttons is readable */
+    background-color: mediumpurple !important; /* Blueish shade */
+    border-radius: 12px !important; /* Rounded corners */
+    color: lightblue !important; /* White text for readability */
+    padding: 4px !important; /* Padding inside the button */
+    margin-right: 5px !important; /* Margin to the right */
+    margin-bottom: 5px !important; /* Margin to the bottom */
 }
+
+    .mud-button-root:hover {
+        background-color: antiquewhite !important; /* Darker blueish shade for hover effect */
+        transition: background-color 0.2s ease-in-out; /* Smooth transition for background color */
+    }
 
 .mud-nav-link {
-    color: antiquewhite !important; /* Text color */
-    background-color: black !important;
-    font-size: 16px; /* Font size */
-    padding: 5px !important; /* Padding */
-    margin-bottom: 3px;
-    display: flex; /* Ensure the content aligns correctly */
-    align-items: center; /* Center items vertically */
+    flex: 1 !important; /* Grow to fill available space */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: aliceblue !important; /* Ensure text color */
+    text-align: center !important;
+    text-decoration: none !important;
+    border: 1px black solid !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: color 0.4s ease, transform 0.4s ease !important;
+    box-sizing: border-box !important;
+    padding: 16px !important; /* Adjust padding as needed */
+    z-index: 1; /* Ensure proper stacking order */
 }
 
-    /* Change background color and text color on hover */
     .mud-nav-link:hover {
-        background-color: darkorange !important; /* Background color on hover */
-        color: #0d47a1; /* Text color on hover */
-        border-radius: 4px; /* Rounded corners */
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        color: black !important; /* Change text color on hover */
+        border-radius: 8px !important;
+        z-index: 2 !important; /* Ensure hovered link stays on top */
     }
 
-    /* Change color when the link is active */
-.nav-menu .mud-nav-link-active {
-    background-color: coral !important;
-    color: red !important;
-}
-.mud-paper {
-    background-color: black !important; /* Set background color to black */
-    color: black !important; /* Set text color to white for better readability */
-    padding: 20px; /* Apply padding */
-    margin-top: 15px; /* Apply margin on top */
-    overflow-x: hidden; /* Hide horizontal overflow */
-}
-
-    /* Optional: Additional styles for MudPaper */
-    .mud-paper .mud-typography {
-        color: white; /* Ensure text inside MudPaper is white */
+    .mud-nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: antiquewhite; /* Color you want to fill */
+        z-index: -1 !important; /* Ensure the background color is behind the text */
+        transition: transform 0.4s ease !important; /* Smooth transition for fill effect */
+        transform: scaleX(0); /* Start with no fill */
+        transform-origin: left; /* Ensure the fill grows from the left */
+        box-sizing: border-box; /* Prevent the pseudo-element from affecting the element’s dimensions */
     }
+
+    .mud-nav-link:hover::before {
+        transform: scaleX(1); /* Fill the background color on hover */
+    }
+
+    .mud-nav-link.active {
+        color: black !important;
+        font-size: 1.5em !important;
+        flex-direction: column !important;
+        border-radius: 12px !important;
+        z-index: 3 !important; /* Keep the active link on top */
+        animation: flashyText 2s infinite; /* Apply the flashy text animation */
+        animation: flashyBackground 3s infinite !important;
+    }
+
+        .mud-nav-link.active::before {
+            transform: scaleX(1) !important; /* Ensure the background color stays filled */
+        }
+
+
+        .mud-nav-link.active .mud-icon-root {
+            fill: red !important; /* Change SVG icon color */
+        }
+
+        /* Optional: Change the hover color for active state */
+        .mud-nav-link.active:hover {
+            color: blue !important; /* Change text color on hover */
+
+        }
+
+            .mud-nav-link.active:hover .mud-icon-root {
+                fill: blue !important; /* Change SVG icon color on hover */
+            }
+
+
+
 .mud-table {
     background-color: black !important; /* Set background color to black */
-    color: black !important; /* Set text color to white for better readability */
-    border: 2px solid orange; /* Add a border */
+    color: antiquewhite !important; /* Set text color to white for better readability */
+    border: 2px solid blue; /* Add a border */
     border-radius: 4px; /* Add rounded corners */
 }
     /* Style table header */
     .mud-table th {
         background-color: black !important; /* Darker background for header */
         color: black !important; /* Text color */
-        padding: 10px; /* Padding */
-
-    }
-
-    /* Style table body rows */
-    .mud-table td {
-        padding: 10px; /* Padding for table cells */
-    }
-
-    /* Style the table's toolbar content */
-    .mud-table .mud-stack {
-        align-items: center; /* Align items center vertically */
     }
 
     /* Style the MudIcon within the table's toolbar */
     .mud-table .icon-title {
         color: black !important; /* Icon color */
-        margin-right: 8px; /* Space between icon and text */
+        margin-right: 18px; /* Space between icon and text */
     }
 
     /* Style the MudText within the table's toolbar */
     .mud-table .mud-typography {
-        color: antiquewhite !important; /* Text color */
+        color: black !important; /* Text color */
     }
 
-    /* Style the MudButton within the table's toolbar */
     .mud-table .mud-button {
-        background-color: red !important; /* Button background color */
+        background-color: lightskyblue !important; /* Button background color */
         color: black !important; /* Button text color */
+        font-size: 24px !important; /* Larger font size */
+        font-weight: bold !important; /* Make text bold */
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.3) !important; /* Shadow for a flashy effect */
+        transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out; /* Smooth transition for text shadow and color */
     }
 
-        /* Adjust the button's hover state */
         .mud-table .mud-button:hover {
-            background-color: white !important; /* Button background color on hover */
+            color: #fff !important; /* Change text color on hover */
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6) !important; /* Brighter shadow effect on hover */
+            background-color: deepskyblue !important; /* Change background color on hover for contrast */
         }
+
+.mud-expand-panel {
+    border-radius: 12px; /* Rounded corners */
+    overflow: hidden; /* Ensure content fits within rounded corners */
+}
+
+/* Style for the expand panel header */
+.mud-expand-panel-header {
+    background: linear-gradient(135deg, #8e24aa, #5c6bc0); /* Gradient background */
+    color: #ffffff; /* White text color for contrast */
+    padding: 15px; /* Padding for spacing */
+    display: flex; /* Flexbox for layout */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space between items */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    border-bottom: 1px solid #4a148c; /* Border for separation */
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+}
+
+    .mud-expand-panel-header:hover {
+        background: linear-gradient(135deg, #5c6bc0, #8e24aa); /* Reverse gradient on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
+    }
+
+    /* Style for the text inside the header */
+    .mud-expand-panel-header .mud-expand-panel-text p.mud-typography.mud-typography-body1 {
+        color: #ffffff; /* White text color */
+        font-size: 1rem; /* Font size */
+        font-weight: bold; /* Bold text */
+        margin: 0; /* Remove margin */
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Text shadow for readability */
+    }
+
+/* Style for the expand panel content */
+.mud-expand-panel-content {
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa); /* Gradient background */
+    padding: 20px; /* Padding for spacing */
+    border-radius: 0 0 12px 12px; /* Rounded corners at the bottom */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+}
+
+    .mud-expand-panel-content:hover {
+        background: linear-gradient(135deg, #8e24aa, #6a1b9a); /* Reverse gradient on hover */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
+    }
+
+    /* Style for the paragraph inside the content */
+    .mud-expand-panel-content p.mud-typography.mud-typography-body1 {
+        color: #ffffff; /* White text color */
+        font-size: 1rem; /* Font size */
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Soft text shadow for readability */
+        margin: 0; /* Remove margin */
+    }
+
+/* Style for the icon */
+.mud-expand-panel-header svg.mud-icon-root {
+    fill: #ffffff; /* Icon color */
+    transition: transform 0.3s ease-in-out; /* Smooth transition for icon transformation */
+}
+
+.mud-expand-panel-header:hover svg.mud-icon-root {
+    transform: rotate(180deg); /* Rotate icon on hover */
+}
+
+.mud-table-cell {
+    color: red !important;
+}
+
+.mud-typography.mud-typography-body1 {
+    color: wheat !important; /* Change text color to red */
+    border-radius: 5px;
+}
+
+.mud-typography.mud-typography-h5 {
+    color: navajowhite !important; /* Change text color to red */
+}
+
+.mud-input-slot {
+    border: 2px solid; /* Change to your desired border color */
+    color: navajowhite !important; /* Change to your desired text color */
+    padding: 10px; /* Optional: to add some padding */
+    border-radius: 4px; /* Optional: to round the corners */
+}
+
+.mud-input-label {
+    background-color: darkslategrey !important;
+    border-radius: 8px; /* Optional: to round the corners */
+    color: navajowhite !important; /* Change to your desired label color */
+    font-size: 1.1rem !important; /* Change to your desired font size */
+    font-weight: bold; /* Change to your desired font weight */
+    border: 2px solid aqua !important; /* Add a border */
+}
+
+.mud-popover {
+    background-color: black !important; /* Background color of the popover */
+    border: 1px solid red !important; /* Border color */
+    border-radius: 18px !important; /* Rounded corners */
+    color: aqua !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important; /* Shadow for depth */
+    padding: 0px !important; /* Padding inside the popover */
+    font-family: Arial, sans-serif; /* Font family */
+}
+
+body p.mud-typography.mud-typography-body1 {
+    display: inline-block; /* Ensure the element can be transformed */
+    transform: scale(0.9); /* Initial smaller size */
+    transition: transform 0.3s ease-in-out, background 0.3s ease-in-out, color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+}
+
+    body p.mud-typography.mud-typography-body1:hover {
+        background: linear-gradient(145deg, #8e24aa, #5c6bc0); /* Gradient background on hover */
+        color: #ffffff; /* White text color for contrast */
+        border-radius: 8px; /* Rounded corners */
+        padding: 5px; /* Padding for better spacing */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Soft text shadow for better readability */
+        transform: scale(1); /* Scale to original size on hover */
+    }
+
+
+
+.mud-toolbar {
+    background: linear-gradient(135deg, #6a1b9a, #8e24aa, #ab47bc, #5c6bc0); /* Gradient transitioning from purple to blue */
+    padding: 15px 20px; /* Padding inside the toolbar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), /* Shadow for depth */
+    inset 0 1px 2px rgba(255, 255, 255, 0.2); /* Inner shadow for additional depth */
+    border: 1px solid #4a148c; /* Darker border to match the gradient */
+    position: relative; /* Positioning for pseudo-elements */
+    overflow: hidden; /* Hide overflow from pseudo-elements */
+}
+
+.app-bar-title {
+    font-family: 'Brush Script MT', cursive !important; /* Calligraphic font */
+    font-size: 30px !important; /* Adjust font size */
+    background-color: black !important;
+    color: #4A00E0; /* Initial color: Blue-Violet */
+    text-shadow: 2px 2px 4px #000000, /* Black shadow for depth */
+    0 0 15px #00BFFF, /* Light Blue glow */
+    0 0 20px #8A2BE2; /* Medium Purple glow */
+    0 0 25px #4B0082; /* Dark Purple glow */
+    letter-spacing: 2px; /* Spacing between letters */
+    animation: flashAnimation 2s infinite; /* Flashing animation */
+}
+
+/* Keyframes for flashing effect with gradient colors */
+@keyframes flashAnimation {
+    0% {
+        color: #4A00E0;
+    }
+
+    25% {
+        color: #6A5ACD;
+    }
+    /* Slate Blue */
+    50% {
+        color: #00BFFF;
+    }
+    /* Light Blue */
+    75% {
+        color: #8A2BE2;
+    }
+    /* Purple */
+    100% {
+        color: #4A00E0;
+    }
+    /* Back to initial color */
+}
+.mud-paper {
+    background: linear-gradient(45deg, #7FFFD4, #FF69B4, #1E90FF, #FFD700, #9370DB) !important;
+    background-size: 400% 400% !important;
+    color: white !important; /* Optional: make text stand out */
+    padding: 20px !important; /* Adjust padding as needed */
+    border-radius: 12px !important; /* Add a border-radius for a smooth appearance */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2) !important; /* Add a shadow for depth */
+}

@@ -2,28 +2,25 @@
 @using DigitalWorldOnline.Commons.Enums;
 @using DigitalWorldOnline.Commons.Models
 
-<MudPaper Style="padding: 18px;
-        margin-top: 15px;">
-    <MudText>Home</MudText>
-</MudPaper>
-
+@* <MudPaper Class="mud-paper-small-top">
+    <MudText Class="mud-text-flashy">Digimon World Online Server</MudText>
+</MudPaper> *@
 <Loader Loading="@Loading">
     <MudPaper Style="padding: 25px;
         margin-top: 15px;
         margin-bottom:5px;
+        background-color:black;
         height: auto;
         min-height: 440px;">
 
-        <MudExpansionPanels DisableBorders="true" Elevation="2" Style="padding-bottom:15px">
-
-            <MudExpansionPanel IsInitiallyExpanded>
+@*             <MudExpansionPanel IsInitiallyExpanded>
                 <TitleContent>
                     <MudStack Row="true" Spacing="2">
                         <MudText>Server Status</MudText>
                     </MudStack>
                 </TitleContent>
                 <ChildContent>
-                    <MudText>Comming soon</MudText>
+                    <MudText>Comming soon</MudText> *@
                     @*<MudButton OnClick="Teste1">Teste1</MudButton>
                     <MudButton OnClick="Teste2">Teste2</MudButton>
                     <MudTable FixedHeader="true"
@@ -134,13 +131,13 @@
                     </MudListItem>
                     </MudCardContent>
                     </MudCard>*@
-                </ChildContent>
-            </MudExpansionPanel>
+@*                 </ChildContent>
+            </MudExpansionPanel> *@
 
             <MudExpansionPanel>
                 <TitleContent>
-                    <MudStack Row="true" Spacing="2">
-                        <MudText>Game Master Commands</MudText>
+                    <MudStack Row="true" Spacing="3">
+                        <MudText>Server Game Master Commands</MudText>
                     </MudStack>
                 </TitleContent>
                 <ChildContent>
@@ -298,9 +295,7 @@
                     <MudText>There's a few more commands still under development. Check here later to see then all :)</MudText>
                 </ChildContent>
             </MudExpansionPanel>
-
-        </MudExpansionPanels>
-        <MudText>Join our <b><a href="https://discord.gg/AN3n6dDY">Discord</a></b> for news :)</MudText>
+        <MudText>Check out my <b><a href="https://github.com/Kostakas">Github</a></b> for more :)</MudText>
     </MudPaper>
 </Loader>
 
