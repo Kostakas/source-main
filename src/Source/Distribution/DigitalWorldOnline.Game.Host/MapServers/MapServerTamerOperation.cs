@@ -973,14 +973,14 @@ namespace DigitalWorldOnline.GameHost
                 string attributeMessage = $"I deal more {Math.Floor(attributeDamage)} Attribute damage!";
 
 
-                BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Name, attributeMessage).Serialize());
+                BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
 
             }
 
             if (elementDamage != 0)
             {
                 string elementmessage = $"i deal more {Math.Floor(elementDamage)} element damage!";
-                string receiverName = client.Tamer.Name;
+                string receiverName = client.Tamer.Partner.Name;
                 client.Send(new ChatMessagePacket(elementmessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Name, receiverName));
             }
 
@@ -996,12 +996,12 @@ namespace DigitalWorldOnline.GameHost
             if (criticalDamage != 0)
             {
                 string crit = $"I dealt {Math.Floor(totalDamage)} Critical damage";
-                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
             }
             else if (totalDamage != 0)
             {
                 string crit = $"I dealt {Math.Floor(totalDamage)} damage";
-                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
 
             }
 
