@@ -1221,7 +1221,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             double factorFromPF = 144.0 / client.Tamer.Partner.Digiclone.ATValue;
 
-            double cloneFactor = Math.Round(1.0 + (6.43 / factorFromPF), 2);
+            double cloneFactor = Math.Round(1.0 + (2.43 / factorFromPF), 2);
             f1BaseDamage = Math.Floor(f1BaseDamage * cloneFactor);
 
             double addedf1Damage = Math.Floor(f1BaseDamage * skillFactor / 100.0);
@@ -1264,7 +1264,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             double f1BaseDamage = skillValue.Value + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
             double skillFactor = 0;
 
-            double cloneFactor = Math.Round(1.0 + (0.43 / (144.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
+            double cloneFactor = Math.Round(1.0 + (0.43 / (85.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
             f1BaseDamage = Math.Floor(f1BaseDamage * cloneFactor);
 
             double addedf1Damage = Math.Floor(f1BaseDamage * skillFactor / 100.0);

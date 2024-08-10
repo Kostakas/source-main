@@ -209,7 +209,7 @@ namespace DigitalWorldOnline.Game.Managers
             else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
             {
                 _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
-                partner.ReceiveElementExp(-25);
+                partner.ReceiveElementExp(10);
             }
             else if (partner.BaseInfo.Element == targetElement)
             {
@@ -237,7 +237,7 @@ namespace DigitalWorldOnline.Game.Managers
             else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
             {
                 _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
-                partner.ReceiveElementExp(-25);
+                partner.ReceiveElementExp(10);
             }
             else if (partner.BaseInfo.Element == targetElement)
             {
