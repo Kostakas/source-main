@@ -925,7 +925,7 @@ namespace DigitalWorldOnline.GameHost
             double elementDamage = partnerAT * multiplier;
             return elementDamage;
         }
-        public  int CalculateDamage(CharacterModel tamer, GameClient client, out double critBonusMultiplier, out bool blocked,IConfiguration configuration = null)
+        public int CalculateDamage(CharacterModel tamer, GameClient client, out double critBonusMultiplier, out bool blocked, IConfiguration configuration = null)
         {
             critBonusMultiplier = 0;
             blocked = false;
@@ -993,10 +993,16 @@ namespace DigitalWorldOnline.GameHost
                 totalDamage += criticalDamage - baseDamage;
             }
 
-            if (totalDamage != 0)
+            if (criticalDamage != 0)
+            {
+                string crit = $"I dealt {Math.Floor(totalDamage)} Critical damage";
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
+            }
+            else if (totalDamage != 0)
             {
                 string crit = $"I dealt {Math.Floor(totalDamage)} damage";
                 BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Name).Serialize());
+
             }
 
             return (int)totalDamage;
