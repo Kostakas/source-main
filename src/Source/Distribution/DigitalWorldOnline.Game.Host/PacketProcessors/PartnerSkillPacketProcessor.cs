@@ -1212,7 +1212,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             var skillValue = skillCode?.Apply.FirstOrDefault(x => x.Type > 0);
 
-            double f1BaseDamage = skillValue.Value + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
+            double f1BaseDamage = skillValue.Value + skill.SkillInfo.FirstConditionCode + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
             double skillFactor = 0;
             double multiplierAttribute = 0;
 
@@ -1261,7 +1261,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             var skill = _assets.DigimonSkillInfo.FirstOrDefault(x => x.Type == client.Partner.CurrentType && x.Slot == skillSlot);
             var skillValue = skillCode?.Apply.FirstOrDefault(x => x.Type > 0);
 
-            double f1BaseDamage = skillValue.Value + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
+            double f1BaseDamage = skillValue.Value + skill.SkillInfo.FirstConditionCode + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
             double skillFactor = 0;
 
             double cloneFactor = Math.Round(1.0 + (0.43 / (85.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
