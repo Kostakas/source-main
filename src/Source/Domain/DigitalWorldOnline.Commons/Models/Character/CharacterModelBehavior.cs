@@ -196,7 +196,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
         public static double CalcularProbabilidadeAcerto(double seuHitRate, int seuNivel, int nivelDoMonstro, double evDoMonstro, double attributeAdvantage)
         {
             double diferencaDeNiveis = seuNivel - nivelDoMonstro;
-            //evDoMonstro *= 0.3;
+            seuHitRate = seuHitRate * 2;
             double levelMultiplier = 1 / (1 + Math.Exp(-diferencaDeNiveis / 50 ));
             double probabilidade = levelMultiplier * (seuHitRate / evDoMonstro) * attributeAdvantage * 100;
 
@@ -1310,13 +1310,13 @@ namespace DigitalWorldOnline.Commons.Models.Character
 
                 if (CurrentHp < HP)
                 {
-                    CurrentHp += (int)Math.Ceiling(HP * 0.01);
+                    CurrentHp += (int)Math.Ceiling(HP * 0.05);
                     if (CurrentHp > HP) CurrentHp = HP;
                 }
 
                 if (CurrentDs < DS)
                 {
-                    CurrentDs += (int)Math.Ceiling(DS * 0.01);
+                    CurrentDs += (int)Math.Ceiling(DS * 0.05);
                     if (CurrentDs > DS) CurrentDs = DS;
                 }
 

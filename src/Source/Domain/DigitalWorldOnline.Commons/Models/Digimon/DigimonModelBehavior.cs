@@ -136,7 +136,7 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
                     GetSealStatus(StatusTypeEnum.AT) +
                     GetTitleStatus(StatusTypeEnum.AT) +
                     (Character?.AccessoryStatus(AccessoryStatusTypeEnum.AT) ?? 0) +
-                    (Character?.ChipsetStatus(AccessoryStatusTypeEnum.AT) ?? 0) +
+                    (Character?.ChipsetStatus(AccessoryStatusTypeEnum.AT) * 4 ?? 0) +
                     BuffAttribute(_baseAt, SkillCodeApplyAttributeEnum.AT, SkillCodeApplyAttributeEnum.DA));
 
                 if (intValue > short.MaxValue)
@@ -244,8 +244,8 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
             (_baseHp * Digiclone.HPValue / 100) +
             GetSealStatus(StatusTypeEnum.HP) +
             GetTitleStatus(StatusTypeEnum.HP) +
-            (Character?.AccessoryStatus(AccessoryStatusTypeEnum.HP) ?? 0) +
-            (Character?.ChipsetStatus(AccessoryStatusTypeEnum.HP) ?? 0) +
+            (Character?.AccessoryStatus(AccessoryStatusTypeEnum.HP) * 4 ?? 0) +
+            (Character?.ChipsetStatus(AccessoryStatusTypeEnum.HP) * 4 ?? 0) +
             BuffAttribute(_baseHp, SkillCodeApplyAttributeEnum.MaxHP);
 
         public int MS => _fsMs;
@@ -500,7 +500,7 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
 
             if (CurrentDs < DS)
             {
-                CurrentDs += (int)Math.Ceiling(DS * 0.01);
+                CurrentDs += (int)Math.Ceiling(DS * 0.05);
                 if (CurrentDs > DS) CurrentDs = DS;
             }
         }

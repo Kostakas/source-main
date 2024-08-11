@@ -25,7 +25,7 @@ namespace DigitalWorldOnline.Commons.Packets.Chat
             WriteString(message);
             WriteByte(0);
         }
-        
+
         public ChatMessagePacket(string message, ChatTypeEnum chatType, WhisperResultEnum whisperResult, string senderName, string receiverName)
         {
             Type(PacketNumber);

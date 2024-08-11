@@ -1256,32 +1256,35 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 return (int)(damage * (1.0 + percentageBonus));
             }
         }
-        private int AoeDamage(GameClient client, CharacterModel tamer, MobConfigModel? targetMob, DigimonSkillAssetModel? targetSkill, SkillCodeAssetModel? skillCode, byte skillSlot,IConfiguration configuration)
+        private int AoeDamage(GameClient client, CharacterModel tamer, MobConfigModel? targetMob, DigimonSkillAssetModel? targetSkill, SkillCodeAssetModel? skillCode, byte skillSlot, IConfiguration configuration)
         {
             var skill = _assets.DigimonSkillInfo.FirstOrDefault(x => x.Type == client.Partner.CurrentType && x.Slot == skillSlot);
             var skillValue = skillCode?.Apply.FirstOrDefault(x => x.Type > 0);
 
-            double f1BaseDamage = Math.Max(skillValue.Value / 2, skill.SkillInfo.FirstConditionCode / 2 ) + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
-            double skillFactor = 0;
+            double f1BaseDamage = Math.Max(skillValue.Value , skill.SkillInfo.FirstConditionCode * 2 ) + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue * 3) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
 
-            double cloneFactor = Math.Round(1.0 + (6.43 / (144.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
+            double cloneFactor = Math.Round(1.0 + (0.43 / (144.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
             f1BaseDamage = Math.Floor(f1BaseDamage * cloneFactor);
 
-            double addedf1Damage = Math.Floor(f1BaseDamage * skillFactor / 100.0);
-            int baseDamage = (int)Math.Floor(f1BaseDamage + addedf1Damage  + client.Tamer.Partner.SKD);
+            //double addedf1Damage = Math.Floor(f1BaseDamage);
+            int baseDamage = (int)Math.Floor(f1BaseDamage + client.Tamer.Partner.AT + client.Tamer.Partner.SCD);
 
             double attributeMultiplier = GetAttributeDamageMultiplier(client, targetMob, tamer, _configuration);
             double elementMultiplier = GetElementDamageMultiplier(client, targetMob, tamer, _configuration);
 
-            int attributeBonus = (int)Math.Floor(baseDamage * attributeMultiplier);
-            int elementBonus = (int)Math.Floor(baseDamage * elementMultiplier);
-
-            int totalDamage = baseDamage + attributeBonus + elementBonus;
-
+            int attributeBonus = (int)Math.Floor(f1BaseDamage * attributeMultiplier);
+            int elementBonus = (int)Math.Floor(f1BaseDamage * elementMultiplier);
+            int totalDamage = baseDamage + attributeBonus + elementBonus - ((targetMob.DEValue * 3) + (targetMob.Level * 50));
             if (totalDamage != 0)
             {
-                string message = $"I Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill damage!";
+
+
+                string message = $"I Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill damage";
+
+                // Broadcast the message
                 _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());
+
+
             }
 
             Random random = new Random();

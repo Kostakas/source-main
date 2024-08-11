@@ -925,89 +925,83 @@ namespace DigitalWorldOnline.GameHost
             double elementDamage = partnerAT * multiplier;
             return elementDamage;
         }
+        //critBonusMultiplier = 0;
+        //    blocked = false; maybe for later??
         public int CalculateDamage(CharacterModel tamer, GameClient client, out double critBonusMultiplier, out bool blocked, IConfiguration configuration = null)
         {
-            critBonusMultiplier = 0;
-            blocked = false;
 
-            double baseDamage = tamer.Partner.AT;
+            double baseDamage = tamer.Partner.AT - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));
 
             var random = new Random();
             // Generate a random bonus between 0% and 5% of the original value
             double percentageBonus = random.NextDouble() * 0.05;
-
             // Calculate the final base damage with the random bonus
-            baseDamage = baseDamage * (1.0 + percentageBonus);
+            baseDamage *= (1.0 + percentageBonus);
 
+            // Ensure baseDamage is non-negative
             if (baseDamage < 0) baseDamage = 0;
 
-            var levelBonusMultiplier = tamer.Partner.Level > tamer.TargetMob.Level ? (0.01f * (tamer.Partner.Level - tamer.TargetMob.Level)) : 0;
-            var levelBonusDamage = (int)(baseDamage * levelBonusMultiplier);
+            // Level-based bonus damage calculation
+            double levelBonusMultiplier = tamer.Partner.Level > tamer.TargetMob.Level ? (0.01 * (tamer.Partner.Level - tamer.TargetMob.Level)) : 0;
+            int levelBonusDamage = (int)(baseDamage * levelBonusMultiplier);
 
+            // Attribute and element damage calculations
             double attributeDamage = GetAttributeDamage(tamer, configuration);
             double elementDamage = GetElementDamage(tamer, configuration);
 
-            double critChance = tamer.Partner.CC / 100.0;
-
             // Determine if the attack is blocked
             blocked = tamer.TargetMob.BLValue >= UtilitiesFunctions.RandomDouble();
-
             if (blocked)
             {
                 baseDamage /= 2;
             }
 
-            double criticalDamage = 0;
             // Check for a critical hit
-            if (critChance >= UtilitiesFunctions.RandomDouble() && tamer.Partner.CD > 0)
+            double critChance = tamer.Partner.CC / 100.0;
+            bool isCriticalHit = critChance >= UtilitiesFunctions.RandomDouble() && tamer.Partner.CD > 0;
+            if (isCriticalHit)
             {
                 blocked = false;  // Critical hits can't be blocked
                 critBonusMultiplier = 1.0;
-                criticalDamage = baseDamage * (1.0 + tamer.Partner.CD / 100.0);
+                double criticalDamage = baseDamage * (1.0 + tamer.Partner.CD / 100.0);
+                baseDamage = criticalDamage - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));  // Apply critical damage as the new base damage
             }
-
-
-            //client.Send(new SystemMessagePacket($"baseDamage: {baseDamage}"));
-            if (attributeDamage != 0)
+            else
             {
-                string attributeMessage = $"I deal more {Math.Floor(attributeDamage)} Attribute damage!";
-
-
-                BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
-
+                critBonusMultiplier = 0;
             }
-
-            if (elementDamage != 0)
-            {
-                string elementmessage = $"i deal more {Math.Floor(elementDamage)} element damage!";
-                string receiverName = client.Tamer.Partner.Name;
-                client.Send(new ChatMessagePacket(elementmessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Name, receiverName));
-            }
-
-            //client.Send(new SystemMessagePacket($"levelBonusDamage:{levelBonusDamage}"));
 
             double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage;
 
-            if (criticalDamage > 0)
+            // Broadcast attribute damage message if applicable
+            if (attributeDamage != 0)
             {
-                totalDamage += criticalDamage - baseDamage;
+                string attributeMessage = $"I deal {Math.Floor(attributeDamage)} Attribute damage!";
+                BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
             }
 
-            if (criticalDamage != 0)
+            // Broadcast element damage message if applicable
+            if (elementDamage != 0)
             {
-                string crit = $"I dealt {Math.Floor(totalDamage)} Critical damage";
-                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
-            }
-            else if (totalDamage != 0)
-            {
-                string crit = $"I dealt {Math.Floor(totalDamage)} damage";
-                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(crit, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
-
+                string elementMessage = $"I deal {Math.Floor(elementDamage)} Element damage!";
+                string receiverName = client.Tamer.Partner.Name;
+                client.Send(new ChatMessagePacket(elementMessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Partner.Name, receiverName));
             }
 
-            return (int)totalDamage;
+            // Broadcast total damage message if applicable
+            if (totalDamage != 0)
+            {
+                string message = isCriticalHit
+                    ? $"Critical Hit! I dealt {Math.Floor(totalDamage)} damage"
+                    : $"I dealt {Math.Floor(totalDamage)} damage";
 
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
+                
+            }
+
+            return (int)totalDamage ;
         }
+
 
         private void CheckMonthlyReward(GameClient client)
         {

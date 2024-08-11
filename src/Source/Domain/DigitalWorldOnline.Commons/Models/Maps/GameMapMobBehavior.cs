@@ -188,7 +188,9 @@ namespace DigitalWorldOnline.Commons.Models.Map
         public void AttackTarget(MobConfigModel mob, List<NpcColiseumAssetModel> npcAsset)
         {
             #region Hit Damage
-            var baseDamage = mob.ATValue - mob.Target.DE + UtilitiesFunctions.RandomInt(1, 15);
+            var baseDamage = mob.ATValue + UtilitiesFunctions.RandomInt(1, 15);
+
+
             if (baseDamage < 0) baseDamage = 0;
 
             var critBonusMultiplier = 0.00;
@@ -199,7 +201,7 @@ namespace DigitalWorldOnline.Commons.Models.Map
             var blocked = mob.Target.BL >= UtilitiesFunctions.RandomDouble();
 
             var levelBonusMultiplier = mob.Level > mob.Target.Level ?
-                (0.01f * (mob.Level - mob.Target.Level)) : 0; //TODO: externalizar no portal
+                (0.06f * (mob.Level - mob.Target.Level)) : 0; //TODO: externalizar no portal
 
             var attributeMultiplier = 0.00;
             if (mob.Attribute.HasAttributeAdvantage(mob.Target.BaseInfo.Attribute))
@@ -219,7 +221,8 @@ namespace DigitalWorldOnline.Commons.Models.Map
                 (baseDamage * critBonusMultiplier) +
                 (baseDamage * levelBonusMultiplier) +
                 (baseDamage * attributeMultiplier) +
-                (baseDamage * elementMultiplier));
+                (baseDamage * elementMultiplier)) -
+                (mob.Target.DE);
             #endregion
 
             if (finalDmg <= 0) finalDmg = 1;
@@ -327,7 +330,7 @@ namespace DigitalWorldOnline.Commons.Models.Map
                     {
                         List<CharacterModel> targetTamers = new List<CharacterModel>();
 
-                        var finalDamage = targetSkill.MaxValue;
+                        var finalDamage = targetSkill.MaxValue - mob.Target.DE * 2;
 
                         // Crie uma cópia da lista mob.TargetTamers para iterar sobre ela
                         var targetTamersCopy = new List<CharacterModel>(mob.TargetTamers);
@@ -413,7 +416,7 @@ namespace DigitalWorldOnline.Commons.Models.Map
                     {
                         List<CharacterModel> targetTamers = new List<CharacterModel>();
 
-                        var finalDamage = targetSkill.MaxValue;
+                        var finalDamage = targetSkill.MaxValue - mob.Target.DE * 2;
 
                         // Crie uma cópia da lista mob.TargetTamers para iterar sobre ela
                         var targetTamersCopy = new List<CharacterModel>(mob.TargetTamers);
