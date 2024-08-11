@@ -5,7 +5,6 @@ using DigitalWorldOnline.Commons.Models.Config;
 using DigitalWorldOnline.Commons.Models.Digimon;
 using DigitalWorldOnline.Commons.Models.Summon;
 using DigitalWorldOnline.Commons.Utils;
-using DigitalWorldOnline.Game.PacketProcessors;
 using Serilog;
 
 namespace DigitalWorldOnline.Game.Managers
@@ -103,7 +102,7 @@ namespace DigitalWorldOnline.Game.Managers
                 }
             }
 
-            if(levelGain > 0)
+            if (levelGain > 0)
                 _logger.Verbose($"Character {tamer.Id} received {receivedExp} exp and gained {levelGain} levels.");
             else
                 _logger.Verbose($"Character {tamer.Id} received {receivedExp} exp.");
@@ -199,52 +198,101 @@ namespace DigitalWorldOnline.Game.Managers
             if (partner.BaseInfo.Attribute.HasAttributeAdvantage(targetAttribute))
             {
                 _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} nature exp.");
-                partner.ReceiveNatureExp(expReward.NatureExperience);
+                partner.ReceiveNatureExp((short)(expReward.NatureExperience / 2));
+            }
+            else if (targetAttribute.HasAttributeAdvantage(partner.BaseInfo.Attribute))
+            {
+                _logger.Verbose($"Partner {partner.Id} lost 25 nature exp.");
+                partner.ReceiveNatureExp((short)(expReward.NatureExperience * 2));
             }
 
-            if (partner.BaseInfo.Element.HasElementAdvantage(targetElement))
+            if (partner.BaseInfo.Attribute == targetAttribute)
             {
-                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience} element exp.");
-                partner.ReceiveElementExp(expReward.ElementExperience);
+                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} attribute exp.");
+                partner.ReceiveNatureExp(expReward.NatureExperience);
             }
-            else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
+            else
             {
-                _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
-                partner.ReceiveElementExp(10);
-            }
-            else if (partner.BaseInfo.Element == targetElement)
-            {
-                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience / 2} element exp.");
-                partner.ReceiveElementExp((short)(expReward.ElementExperience / 2));
+                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience / 2} attribute exp.");
+                partner.ReceiveNatureExp(expReward.NatureExperience);
             }
         }
         internal void ReceiveAttributeExperience(
-           DigimonModel partner,
-           DigimonAttributeEnum targetAttribute,
-           DigimonElementEnum targetElement,
-           SummonMobExpRewardModel expReward)
+            DigimonModel partner,
+            DigimonAttributeEnum targetAttribute,
+            DigimonElementEnum targetElement,
+            SummonMobExpRewardModel expReward)
         {
             if (partner.BaseInfo.Attribute.HasAttributeAdvantage(targetAttribute))
             {
                 _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} nature exp.");
-                partner.ReceiveNatureExp(expReward.NatureExperience);
+                partner.ReceiveNatureExp((short)(expReward.NatureExperience / 2));
+            }
+            else if (targetAttribute.HasAttributeAdvantage(partner.BaseInfo.Attribute))
+            {
+                _logger.Verbose($"Partner {partner.Id} lost 25 nature exp.");
+                partner.ReceiveNatureExp((short)(20 + expReward.NatureExperience));
             }
 
+            if (partner.BaseInfo.Attribute == targetAttribute)
+            {
+                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} attribute exp.");
+                partner.ReceiveNatureExp(expReward.NatureExperience);
+            }
+            else
+            {
+                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} attribute exp.");
+                partner.ReceiveNatureExp(expReward.NatureExperience);
+            }
+        }
+
+        internal void ReceiveElementExperience(
+            DigimonModel partner,
+            DigimonAttributeEnum targetAttribute,
+            DigimonElementEnum targetElement,
+            MobExpRewardConfigModel expReward)
+        {
             if (partner.BaseInfo.Element.HasElementAdvantage(targetElement))
             {
                 _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience} element exp.");
-                partner.ReceiveElementExp(expReward.ElementExperience);
+                partner.ReceiveElementExp((short)(expReward.ElementExperience / 2));
             }
             else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
             {
                 _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
-                partner.ReceiveElementExp(10);
+                partner.ReceiveElementExp((short)(expReward.ElementExperience * 2));
             }
-            else if (partner.BaseInfo.Element == targetElement)
+            else
             {
-                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience / 2} element exp.");
-                partner.ReceiveElementExp((short)(expReward.ElementExperience / 2));
+                // Handle case where no advantage applies
+                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience} element exp.");
+                partner.ReceiveElementExp((short)expReward.ElementExperience);
             }
         }
+
+        internal void ReceiveElementExperience(
+            DigimonModel partner,
+            DigimonAttributeEnum targetAttribute,
+            DigimonElementEnum targetElement,
+            SummonMobExpRewardModel expReward)
+        {
+            if (partner.BaseInfo.Element.HasElementAdvantage(targetElement))
+            {
+                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience} element exp.");
+                partner.ReceiveElementExp((short)(expReward.ElementExperience / 2));
+            }
+            else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
+            {
+                _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
+                partner.ReceiveElementExp((short)(10 + expReward.ElementExperience));
+            }
+            else
+            {
+                // Handle case where no advantage applies
+                _logger.Verbose($"Partner {partner.Id} received {expReward.ElementExperience} element exp.");
+                partner.ReceiveElementExp((short)expReward.ElementExperience);
+            }
+        }
+
     }
 }
