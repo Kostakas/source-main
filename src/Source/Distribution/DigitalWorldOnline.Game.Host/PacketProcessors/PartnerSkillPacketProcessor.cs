@@ -1277,15 +1277,19 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             int attributeBonus = (int)Math.Floor(f1BaseDamage * attributeMultiplier);
             int elementBonus = (int)Math.Floor(f1BaseDamage * elementMultiplier);
             int totalDamage = baseDamage + attributeBonus + elementBonus - ((targetMob.DEValue * 3) + (targetMob.Level * 50));
-            if (totalDamage != 0)
+            if (totalDamage < 0)
             {
+                string message = $"Digimon's defence is way too high for skill";
 
-
+                // Broadcast the message
+                _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());
+            }
+            else if (totalDamage > 0)
+            {
                 string message = $"I Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill damage";
 
                 // Broadcast the message
                 _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());
-
 
             }
 

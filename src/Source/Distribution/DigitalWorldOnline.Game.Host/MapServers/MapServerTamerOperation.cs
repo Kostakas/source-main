@@ -930,7 +930,7 @@ namespace DigitalWorldOnline.GameHost
         public int CalculateDamage(CharacterModel tamer, GameClient client, out double critBonusMultiplier, out bool blocked, IConfiguration configuration = null)
         {
 
-            double baseDamage = tamer.Partner.AT - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));
+            double baseDamage = tamer.Partner.AT;
 
             var random = new Random();
             // Generate a random bonus between 0% and 5% of the original value
@@ -964,39 +964,43 @@ namespace DigitalWorldOnline.GameHost
                 blocked = false;  // Critical hits can't be blocked
                 critBonusMultiplier = 1.0;
                 double criticalDamage = baseDamage * (1.0 + tamer.Partner.CD / 100.0);
-                baseDamage = criticalDamage - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));  // Apply critical damage as the new base damage
+                baseDamage = criticalDamage;  // Apply critical damage as the new base damage
             }
             else
             {
                 critBonusMultiplier = 0;
             }
 
-            double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage;
+            double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));
 
             // Broadcast attribute damage message if applicable
             if (attributeDamage != 0)
             {
-                string attributeMessage = $"I deal {Math.Floor(attributeDamage)} Attribute damage!";
+                string attributeMessage = $"I dealt {Math.Floor(attributeDamage)} Attribute damage!";
                 BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
             }
 
             // Broadcast element damage message if applicable
             if (elementDamage != 0)
             {
-                string elementMessage = $"I deal {Math.Floor(elementDamage)} Element damage!";
+                string elementMessage = $"I dealt {Math.Floor(elementDamage)} Element damage!";
                 string receiverName = client.Tamer.Partner.Name;
                 client.Send(new ChatMessagePacket(elementMessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Partner.Name, receiverName));
             }
 
             // Broadcast total damage message if applicable
-            if (totalDamage != 0)
+            if (totalDamage < 0)
+            {
+                string message = $"Enemy Digimon's defence is way too high";
+                BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
+            }
+            else if (totalDamage > 0)
             {
                 string message = isCriticalHit
                     ? $"Critical Hit! I dealt {Math.Floor(totalDamage)} damage"
                     : $"I dealt {Math.Floor(totalDamage)} damage";
 
                 BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
-                
             }
 
             return (int)totalDamage ;
