@@ -11,6 +11,9 @@ namespace DigitalWorldOnline.Game.Models.Configuration
         public int? BaseCriticalDamage { get; set; }
         public AttributeConfig Attribute { get; set; }
         public ElementConfig Element { get; set; }
+        public ItemDropCountConfig ItemDropCount { get; set; }
+
+        public BitDropCountConfig BitDropCount { get; set; }
 
         public class AttributeConfig
         {
@@ -24,6 +27,18 @@ namespace DigitalWorldOnline.Game.Models.Configuration
             public bool ApplyDamage { get; set; }
             public double AdvantageMultiplier { get; set; }
             public double DisAdvantageMultiplier { get; set; }
+        }
+
+        public class ItemDropCountConfig
+        {
+            public bool ApplyDropAddition { get; set; }
+            public int MultiplyDropCount { get; set; }
+        }
+
+        public class BitDropCountConfig
+        {
+            public bool ApplyDropAddition { get; set; }
+            public int MultiplyDropCount { get; set; }
         }
     }
 }

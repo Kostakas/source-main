@@ -17,7 +17,9 @@ using DigitalWorldOnline.Commons.Packets.MapServer;
 using DigitalWorldOnline.Commons.Utils;
 using DigitalWorldOnline.Commons.Writers;
 using DigitalWorldOnline.Game.Managers;
+using DigitalWorldOnline.Game.Models.Configuration;
 using DigitalWorldOnline.Infraestructure.Migrations;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq;
@@ -900,20 +902,23 @@ namespace DigitalWorldOnline.GameHost
             if (targetClient == null)
                 return;
 
-            BitDropReward(map, mob, targetClient);
+            BitDropReward(map, mob, targetClient, _configuration);
 
-            ItemDropReward(map, mob, targetClient);
+            ItemDropReward(map, mob, targetClient, _configuration);
         }
 
-        private void BitDropReward(GameMap map, MobConfigModel mob, GameClient? targetClient)
+        private void BitDropReward(GameMap map, MobConfigModel mob, GameClient? targetClient, IConfiguration configuration)
         {
+            var gameConfig = new GameConfigurationModel();
+            configuration.GetSection("GameConfigs").Bind(gameConfig);
+
             var bitsReward = mob.DropReward.BitsDrop;
 
             if (bitsReward != null && bitsReward.Chance >= UtilitiesFunctions.RandomDouble())
             {
                 if (targetClient.Tamer.HasAura && targetClient.Tamer.Aura.ItemInfo.Section == 2100)
                 {
-                    var amount = UtilitiesFunctions.RandomInt(bitsReward.MinAmount, bitsReward.MaxAmount);
+                    var amount = UtilitiesFunctions.RandomInt(bitsReward.MinAmount, bitsReward.MaxAmount) * int.Parse(configuration["GameConfigs:BitDropCount:MultiplyDropCount"] ?? "0.1");
 
                     targetClient.Send(
                         new PickBitsPacket(
@@ -933,7 +938,7 @@ namespace DigitalWorldOnline.GameHost
                         targetClient.TamerId,
                         targetClient.Tamer.GeneralHandler,
                         bitsReward.MinAmount,
-                        bitsReward.MaxAmount,
+                        bitsReward.MaxAmount * int.Parse(configuration["GameConfigs:BitDropCount:MultiplyDropCount"] ?? "0.1"),
                         mob.CurrentLocation.MapId,
                         mob.CurrentLocation.X,
                         mob.CurrentLocation.Y
@@ -944,8 +949,11 @@ namespace DigitalWorldOnline.GameHost
             }
         }
 
-        private void ItemDropReward(GameMap map, MobConfigModel mob, GameClient? targetClient)
+        private void ItemDropReward(GameMap map, MobConfigModel mob, GameClient? targetClient, IConfiguration configuration)
         {
+            var gameConfig = new GameConfigurationModel();
+            configuration.GetSection("GameConfigs").Bind(gameConfig);
+
             if (!mob.DropReward.Drops.Any())
                 return;
 
@@ -987,7 +995,7 @@ namespace DigitalWorldOnline.GameHost
                             }
 
                             newItem.ItemId = itemDrop.ItemId;
-                            newItem.Amount = UtilitiesFunctions.RandomInt(itemDrop.MinAmount, itemDrop.MaxAmount);
+                            newItem.Amount = UtilitiesFunctions.RandomInt(itemDrop.MinAmount, itemDrop.MaxAmount) * int.Parse(configuration["GameConfigs:ItemDropCount:MultiplyDropCount"] ?? "0.1");
 
                             var itemClone = (ItemModel)newItem.Clone();
                             if (targetClient.Tamer.Inventory.AddItem(newItem))
@@ -1024,7 +1032,7 @@ namespace DigitalWorldOnline.GameHost
                                 targetClient.Tamer.GeneralHandler,
                                 itemDrop.ItemId,
                                 itemDrop.MinAmount,
-                                itemDrop.MaxAmount,
+                                itemDrop.MaxAmount * int.Parse(configuration["GameConfigs:ItemDropCount:MultiplyDropCount"] ?? "0.1"),
                                 mob.CurrentLocation.MapId,
                                 mob.CurrentLocation.X,
                                 mob.CurrentLocation.Y

@@ -192,7 +192,6 @@ namespace DigitalWorldOnline.Game.Managers
         internal void ReceiveAttributeExperience(
             DigimonModel partner,
             DigimonAttributeEnum targetAttribute,
-            DigimonElementEnum targetElement,
             MobExpRewardConfigModel expReward)
         {
             if (partner.BaseInfo.Attribute.HasAttributeAdvantage(targetAttribute))
@@ -205,12 +204,6 @@ namespace DigitalWorldOnline.Game.Managers
                 _logger.Verbose($"Partner {partner.Id} lost 25 nature exp.");
                 partner.ReceiveNatureExp((short)(expReward.NatureExperience * 2));
             }
-
-            if (partner.BaseInfo.Attribute == targetAttribute)
-            {
-                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} attribute exp.");
-                partner.ReceiveNatureExp(expReward.NatureExperience);
-            }
             else
             {
                 _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience / 2} attribute exp.");
@@ -220,7 +213,6 @@ namespace DigitalWorldOnline.Game.Managers
         internal void ReceiveAttributeExperience(
             DigimonModel partner,
             DigimonAttributeEnum targetAttribute,
-            DigimonElementEnum targetElement,
             SummonMobExpRewardModel expReward)
         {
             if (partner.BaseInfo.Attribute.HasAttributeAdvantage(targetAttribute))
@@ -231,13 +223,7 @@ namespace DigitalWorldOnline.Game.Managers
             else if (targetAttribute.HasAttributeAdvantage(partner.BaseInfo.Attribute))
             {
                 _logger.Verbose($"Partner {partner.Id} lost 25 nature exp.");
-                partner.ReceiveNatureExp((short)(20 + expReward.NatureExperience));
-            }
-
-            if (partner.BaseInfo.Attribute == targetAttribute)
-            {
-                _logger.Verbose($"Partner {partner.Id} received {expReward.NatureExperience} attribute exp.");
-                partner.ReceiveNatureExp(expReward.NatureExperience);
+                partner.ReceiveNatureExp((short)(expReward.NatureExperience * 2));
             }
             else
             {
@@ -248,7 +234,6 @@ namespace DigitalWorldOnline.Game.Managers
 
         internal void ReceiveElementExperience(
             DigimonModel partner,
-            DigimonAttributeEnum targetAttribute,
             DigimonElementEnum targetElement,
             MobExpRewardConfigModel expReward)
         {
@@ -272,7 +257,6 @@ namespace DigitalWorldOnline.Game.Managers
 
         internal void ReceiveElementExperience(
             DigimonModel partner,
-            DigimonAttributeEnum targetAttribute,
             DigimonElementEnum targetElement,
             SummonMobExpRewardModel expReward)
         {
@@ -284,7 +268,7 @@ namespace DigitalWorldOnline.Game.Managers
             else if (targetElement.HasElementAdvantage(partner.BaseInfo.Element))
             {
                 _logger.Verbose($"Partner {partner.Id} lost 25 element exp.");
-                partner.ReceiveElementExp((short)(10 + expReward.ElementExperience));
+                partner.ReceiveElementExp((short)(expReward.ElementExperience * 2));
             }
             else
             {

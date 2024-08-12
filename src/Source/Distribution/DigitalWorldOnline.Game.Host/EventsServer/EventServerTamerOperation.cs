@@ -394,7 +394,8 @@ namespace DigitalWorldOnline.GameHost.EventsServer
         {
             var partnerResult = _expManager.ReceiveDigimonExperience(partnerExpToReceive, partner);
 
-            _expManager.ReceiveAttributeExperience(partner, targetMob.Attribute, targetMob.Element, targetMob.ExpReward);
+            _expManager.ReceiveAttributeExperience(partner, targetMob.Attribute, targetMob.ExpReward);
+            _expManager.ReceiveElementExperience(partner, targetMob.Element, targetMob.ExpReward);
 
             partner.ReceiveSkillExp(targetMob.ExpReward.SkillExperience);
 

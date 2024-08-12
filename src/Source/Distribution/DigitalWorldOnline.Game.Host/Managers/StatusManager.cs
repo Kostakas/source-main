@@ -70,7 +70,8 @@ namespace DigitalWorldOnline.Game.Managers
             var finalCr = (int)Math.Floor(sizeCr);
 
             int baseCd = Int32.Parse(_configuration["Digimon:BaseCriticalDamage"] ?? "0");
-            var finalCd = sizeMultiplier < 1 ? baseCd : size / 100;
+            //var finalCd = sizeMultiplier < 1 ? baseCd : size / 100; 
+            var finalCd = baseCd;
 
             var sizeDe = sizeMultiplier * baseInfo.DEValue + statusInfo.DEValue;
             var applyDe = (int)(statusInfo.DEValue * (statusApply.ApplyValue - 100) * 0.01f);
