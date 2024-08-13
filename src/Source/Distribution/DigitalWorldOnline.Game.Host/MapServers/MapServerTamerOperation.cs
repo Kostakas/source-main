@@ -817,6 +817,28 @@ namespace DigitalWorldOnline.GameHost
             return tamerResult;
         }
 
+        private ReceiveExpResult ReceiveBonusTamerExp(CharacterModel tamer, long totalTamerExp)
+        {
+            var tamerResult = _expManager.ReceiveTamerExperience(totalTamerExp, tamer);
+
+            if (tamerResult.LevelGain > 0)
+            {
+                BroadcastForTamerViewsAndSelf(tamer.Id,
+                    new LevelUpPacket(tamer.GeneralHandler, tamer.Level).Serialize());
+
+                tamer.SetLevelStatus(
+                    _statusManager.GetTamerLevelStatus(
+                        tamer.Model,
+                        tamer.Level
+                    )
+                );
+
+                tamer.FullHeal();
+            }
+
+            return tamerResult;
+        }
+
         private ReceiveExpResult ReceivePartnerExp(DigimonModel partner, MobConfigModel targetMob, long partnerExpToReceive)
         {
             var partnerResult = _expManager.ReceiveDigimonExperience(partnerExpToReceive, partner);
@@ -825,6 +847,27 @@ namespace DigitalWorldOnline.GameHost
             _expManager.ReceiveElementExperience(partner, targetMob.Element, targetMob.ExpReward);
 
             partner.ReceiveSkillExp(targetMob.ExpReward.SkillExperience);
+
+            if (partnerResult.LevelGain > 0)
+            {
+                partner.SetBaseStatus(
+                    _statusManager.GetDigimonBaseStatus(
+                        partner.CurrentType,
+                        partner.Level,
+                        partner.Size
+                    )
+                );
+
+                BroadcastForTamerViewsAndSelf(partner.Character.Id,
+                    new LevelUpPacket(partner.GeneralHandler, partner.Level).Serialize());
+
+                partner.FullHeal();
+            }
+            return partnerResult;
+        }
+        private ReceiveExpResult ReceiveBonusPartnerExp(DigimonModel partner, MobConfigModel targetMob, long totalPartnerExp)
+        {
+            var partnerResult = _expManager.ReceiveDigimonExperience(totalPartnerExp, partner);
 
             if (partnerResult.LevelGain > 0)
             {

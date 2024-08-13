@@ -671,20 +671,30 @@ namespace DigitalWorldOnline.GameHost
 
                 double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
                 double levelDifference = mob.Level - tamer.Partner.Level;
-                long additionalMultiplier = (long)(1 + levelDifference * 0.1);
 
-                var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) * expBonusMultiplier);
+                // Calculate additional multiplier based on level difference
+                long additionalMultiplier = (long)Math.Round(1 + levelDifference * 1);
 
-                if (levelDifference > 1)
+                // Calculate the base experience to receive
+                long partnerExpToReceive = (long)CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience);
+                long bonusMultiplierExp = partnerExpToReceive * additionalMultiplier;
+                // Apply bonus multipliers to the experience
+                long finalExp = (long)(partnerExpToReceive * expBonusMultiplier);
+
+                if (levelDifference > 0)
                 {
-                    partnerExpToReceive *= additionalMultiplier;  // Apply the multiplier to experience value
+                    finalExp += bonusMultiplierExp; 
                 }
 
-                totalPartnerExp += partnerExpToReceive;  // Accumulate experience
+                totalPartnerExp += (finalExp - partnerExpToReceive); // Add only the "bonus" experience
+
+
             }
 
             return totalPartnerExp;
         }
+
+
 
 
         private long BonusTamerExp(GameMap map, MobConfigModel mob)
@@ -697,22 +707,35 @@ namespace DigitalWorldOnline.GameHost
                 if (targetClient == null)
                     continue;
 
+                // Calculate the experience bonus multiplier
+             
                 double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
                 double levelDifference = mob.Level - tamer.Partner.Level;
-                long additionalMultiplier = (long)(1 + levelDifference * 0.1);
 
-                var tamerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) * expBonusMultiplier);
+                // Calculate additional multiplier based on level difference
+                long additionalMultiplier = (long)Math.Round(levelDifference * 1);  // Adjust multiplier factor as needed
 
-                if (levelDifference > 1)
+                // Calculate the base experience to receive
+                long tamerExpToReceive = (long)CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience);
+
+                // Calculate the bonus multiplier experience
+                long bonusMultiplierExp = tamerExpToReceive * additionalMultiplier;
+
+                // Apply bonus multipliers to the experience
+                long finalExp = (long)(tamerExpToReceive * expBonusMultiplier);
+
+                if (levelDifference > 1)  // Apply the multiplier conditionally
                 {
-                    tamerExpToReceive *= additionalMultiplier;  // Apply the multiplier to experience value
+                    finalExp += bonusMultiplierExp;  // Add the bonus multiplier experience if the level difference is significant
                 }
 
-                totalTamerExp += tamerExpToReceive;  // Accumulate experience
+                // Accumulate the additional experience gained
+                totalTamerExp += (finalExp - tamerExpToReceive); // Add only the "bonus" experience
             }
 
             return totalTamerExp;
         }
+
 
 
 
@@ -729,9 +752,7 @@ namespace DigitalWorldOnline.GameHost
                 if (targetClient == null)
                     continue;
 
-                double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
                 var tamerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience)); //TODO: +bonus
-
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) == 0)
                     tamerExpToReceive = 0;
 
@@ -741,22 +762,30 @@ namespace DigitalWorldOnline.GameHost
                 var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience));
 
 
+
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) == 0)
                     partnerExpToReceive = 0;
 
                 if (partnerExpToReceive > 100) partnerExpToReceive += UtilitiesFunctions.RandomInt(-15, 15);
                 var partnerResult = ReceivePartnerExp(targetClient.Partner, mob, partnerExpToReceive);
-                var bonusTamer = BonusTamerExp(map, mob);
-                var bonusPartner = BonusPartnerExp(map, mob);
+
+                var totalTamerExp = BonusTamerExp(map, mob);
+
+                var bonusTamerExp = ReceiveBonusTamerExp(targetClient.Tamer, totalTamerExp);
+
+                var totalPartnerExp =  BonusPartnerExp(map, mob);
+
+                var bonusPartnerExp = ReceiveBonusPartnerExp(targetClient.Partner, mob, totalPartnerExp);
+
 
                 targetClient.Send(
                     new ReceiveExpPacket(
                         tamerExpToReceive,
-                        bonusTamer,
+                        totalTamerExp,
                         targetClient.Tamer.CurrentExperience,
                         targetClient.Partner.GeneralHandler,
                         partnerExpToReceive,
-                        bonusPartner,//TODO: obter os bonus
+                        totalPartnerExp,
                         targetClient.Partner.CurrentExperience,
                         targetClient.Partner.CurrentEvolution.SkillExperience
                     )
