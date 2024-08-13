@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Scans
@@ -29,7 +30,7 @@ namespace DigitalWorldOnline.Admin.Pages.Scans
         private MudTextField<string> _filterParameter;
         private MudTable<ScanDetailViewModel> _table;
 
-        private async Task<TableData<ScanDetailViewModel>> ServerReload(TableState state)
+        private async Task<TableData<ScanDetailViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var scans = await Sender.Send(
                 new GetScansQuery(
@@ -69,7 +70,7 @@ namespace DigitalWorldOnline.Admin.Pages.Scans
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/scans/delete/{id}");
             else
                 await Refresh();

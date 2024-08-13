@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Serilog;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Mobs
@@ -75,7 +76,7 @@ namespace DigitalWorldOnline.Admin.Pages.Mobs
             Nav.NavigateTo("/maps");
         }
 
-        private async Task<TableData<MobViewModel>> ServerReload(TableState state)
+        private async Task<TableData<MobViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var mobs = await Sender.Send(
                 new GetMobsQuery(
@@ -112,7 +113,7 @@ namespace DigitalWorldOnline.Admin.Pages.Mobs
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/mobs/duplicate/{id}");
             else
                 await Refresh();
@@ -136,7 +137,7 @@ namespace DigitalWorldOnline.Admin.Pages.Mobs
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/mobs/delete/{id}");
             else
                 await Refresh();

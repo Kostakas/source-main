@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Players
@@ -26,7 +27,7 @@ namespace DigitalWorldOnline.Admin.Pages.Players
         private MudTextField<string> _filterParameter;
         private MudTable<PlayerViewModel> _table;
 
-        private async Task<TableData<PlayerViewModel>> ServerReload(TableState state)
+        private async Task<TableData<PlayerViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var players = await Sender.Send(
                 new GetPlayersQuery(

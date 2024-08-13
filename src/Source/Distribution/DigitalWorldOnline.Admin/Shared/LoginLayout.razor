@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navMan
 
 <MudThemeProvider Theme="_currentTheme"></MudThemeProvider>
+<MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudLayout>
     <div class="background-container"></div>
@@ -17,11 +20,22 @@
 @code {
     private MudTheme _currentTheme = new MudTheme()
         {
-            Palette = new Palette()
+            PaletteLight = new PaletteLight()
             {
                 AppbarBackground = "#02fb66",
                 Primary = "#fb020e",
                 DrawerIcon = "#02fb66"
+            },
+            PaletteDark = new PaletteDark()
+            {
+                AppbarBackground = "#02fb66",
+                Primary = "#fb020e",
+                DrawerIcon = "#02fb66"
+            },
+            LayoutProperties = new LayoutProperties()
+            {
+                DrawerWidthLeft = "260px",
+                DrawerWidthRight = "300px"
             }
         };
 }

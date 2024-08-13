@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Clones
@@ -29,7 +30,7 @@ namespace DigitalWorldOnline.Admin.Pages.Clones
         private MudTextField<string> _filterParameter;
         private MudTable<CloneViewModel> _table;
 
-        private async Task<TableData<CloneViewModel>> ServerReload(TableState state)
+        private async Task<TableData<CloneViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var clons = await Sender.Send(
                 new GetClonsQuery(
@@ -69,7 +70,7 @@ namespace DigitalWorldOnline.Admin.Pages.Clones
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/clones/delete/{id}");
             else
                 await Refresh();

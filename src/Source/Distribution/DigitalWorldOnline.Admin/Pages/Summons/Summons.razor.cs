@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Serilog;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Summons
@@ -39,7 +40,7 @@ namespace DigitalWorldOnline.Admin.Pages.Summons
             Nav.NavigateTo("/");
         }
 
-        private async Task<TableData<SummonViewModel>> ServerReload(TableState state)
+        private async Task<TableData<SummonViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             //var summons = await Sender.Send(
             //    new GetSummonsQuery(
@@ -75,7 +76,7 @@ namespace DigitalWorldOnline.Admin.Pages.Summons
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/summons/duplicate/{id}");
             else
                 await Refresh();
@@ -99,7 +100,7 @@ namespace DigitalWorldOnline.Admin.Pages.Summons
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/summons/delete/{id}");
             else
                 await Refresh();

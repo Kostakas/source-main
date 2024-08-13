@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Serilog;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.SpawnPoints
@@ -78,7 +79,7 @@ namespace DigitalWorldOnline.Admin.Pages.SpawnPoints
             Nav.NavigateTo("/maps");
         }
 
-        private async Task<TableData<SpawnPointViewModel>> ServerReload(TableState state)
+        private async Task<TableData<SpawnPointViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var users = await Sender.Send(
                 new GetSpawnPointsQuery(
@@ -118,7 +119,7 @@ namespace DigitalWorldOnline.Admin.Pages.SpawnPoints
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/spawnpoints/delete/{id}");
             else
                 await Refresh();

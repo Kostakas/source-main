@@ -45,7 +45,7 @@
                 {
                     if (string.IsNullOrEmpty(value))
                     {
-                        _selectedMobAsset.Clear();
+                        _selectedMobAsset.ClearAsync();
                     }
 
                     return Array.Empty<MobAssetViewModel>();
@@ -62,7 +62,7 @@
                 {
                     if (string.IsNullOrEmpty(value))
                     {
-                        _selectedItemAsset.Clear();
+                        _selectedItemAsset.ClearAsync();
                     }
 
                     return Array.Empty<ItemAssetViewModel>();

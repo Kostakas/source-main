@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Users
@@ -28,7 +29,7 @@ namespace DigitalWorldOnline.Admin.Pages.Users
         private MudTextField<string> _filterParameter;
         private MudTable<UserViewModel> _table;
 
-        private async Task<TableData<UserViewModel>> ServerReload(TableState state)
+        private async Task<TableData<UserViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var users = await Sender.Send(
                 new GetUsersQuery(
@@ -68,7 +69,7 @@ namespace DigitalWorldOnline.Admin.Pages.Users
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/users/delete/{id}");
             else
                 await Refresh();

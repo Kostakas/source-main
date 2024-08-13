@@ -99,7 +99,7 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
         /// <summary>
         /// Digimon attribute experience.
         /// </summary>
-        public DigimonAttributeExperienceModel AttributeExperience { get; private set; }
+        public DigimonAttributeExperienceModel AttributeExperience { get;  set; }
 
         /// <summary>
         /// Digimon current location.

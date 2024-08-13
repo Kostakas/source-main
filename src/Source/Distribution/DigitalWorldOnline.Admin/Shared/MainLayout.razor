@@ -17,7 +17,7 @@
                 <img src="/Images/kimeramon.gif" width="100%" height="80px" style="padding-left: 10px;" />
             </MudDrawerHeader>
             <MudSpacer />
-            <MudIconButton Icon="@Icons.Filled.ExitToApp" Title="Logout" Color="Color.Inherit" Href="logout" />
+            <MudIconButton Icon="@Icons.Material.Filled.ExitToApp" Title="Logout" Color="Color.Inherit" Href="logout" />
         </MudAppBar>
         <MudDrawer @bind-Open="_drawerOpen" Elevation="3">
 @*              <MudDrawerHeader>
@@ -45,7 +45,7 @@ else
                         <img src="/Images/kimeramon.gif" width="100%" height="80px" style="padding-left: 10px;" />
                     </MudDrawerHeader>
                     <MudSpacer />
-                    <MudIconButton Icon="@Icons.Filled.ExitToApp" Title="Logout" Href="logout" />
+                    <MudIconButton Icon="@Icons.Material.Filled.ExitToApp" Title="Logout" Href="logout" />
                 </MudAppBar>
                 <MudDrawer @bind-Open="_drawerOpen" Elevation="3" Class="mud-drawer">
 @*                     <MudDrawerHeader>
@@ -82,7 +82,7 @@ else
 
     private MudTheme _currentTheme = new MudTheme()
     {
-        Palette = new Palette()
+        PaletteDark = new PaletteDark()
         {
                 AppbarBackground = "#82817e",
                 Primary = "#155883",

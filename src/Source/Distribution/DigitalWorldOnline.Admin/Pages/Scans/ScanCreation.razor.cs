@@ -13,6 +13,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Scans
@@ -40,13 +41,13 @@ namespace DigitalWorldOnline.Admin.Pages.Scans
         [Inject]
         public ILogger Logger { get; set; }
 
-        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value)
+        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value, CancellationToken token)
         {
             if (string.IsNullOrEmpty(value) || value.Length < 3)
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    await _selectedItemAsset.Clear();
+                    await _selectedItemAsset.ClearAsync();
                 }
 
                 return new ItemAssetViewModel[0];

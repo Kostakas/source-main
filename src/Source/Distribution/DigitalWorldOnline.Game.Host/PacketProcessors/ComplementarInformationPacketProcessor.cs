@@ -5,6 +5,7 @@ using DigitalWorldOnline.Application.Separar.Queries;
 using DigitalWorldOnline.Commons.Entities;
 using DigitalWorldOnline.Commons.Enums.Character;
 using DigitalWorldOnline.Commons.Enums.ClientEnums;
+using DigitalWorldOnline.Commons.Enums.Map;
 using DigitalWorldOnline.Commons.Enums.PacketProcessor;
 using DigitalWorldOnline.Commons.Extensions;
 using DigitalWorldOnline.Commons.Interfaces;
@@ -91,7 +92,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             if (!client.DungeonMap)
             {
                 _logger.Debug($"Sending server experience packet for character {client.TamerId}...");
-                client.Send(new ServerExperiencePacket(serverInfo));
+                client.Send(new ServerExperiencePacket(serverInfo, ServerExperienceEnum.Boost));
             }
 
             if (client.MembershipExpirationDate != null)

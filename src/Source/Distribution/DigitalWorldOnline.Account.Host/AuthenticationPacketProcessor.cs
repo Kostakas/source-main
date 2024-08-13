@@ -122,7 +122,7 @@ namespace DigitalWorldOnline.Account
                         {
                             //Obs.: The client itself handles the "Not Today" checkbox
                             //When checked, sending "3" will not show the request screen
-                            client.Send(new LoginRequestAnswerPacket(SecondaryPasswordScreenEnum.RequestSetup));
+                            client.Send(new LoginRequestAnswerPacket(SecondaryPasswordScreenEnum.Hide)); ///hide password
                         }
                         else
                         {

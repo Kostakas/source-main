@@ -1,6 +1,7 @@
 ﻿using DigitalWorldOnline.Application.Separar.Commands.Update;
 using DigitalWorldOnline.Application.Separar.Queries;
 using DigitalWorldOnline.Commons.Entities;
+using DigitalWorldOnline.Commons.Enums.Character;
 using DigitalWorldOnline.Commons.Enums.ClientEnums;
 using DigitalWorldOnline.Commons.Models.Base;
 using DigitalWorldOnline.Commons.Models.Character;
@@ -840,7 +841,6 @@ namespace DigitalWorldOnline.GameHost
 
                 partner.FullHeal();
             }
-
             return partnerResult;
         }
         private ReceiveExpResult ReceivePartnerExp(DigimonModel partner, SummonMobModel targetMob, long partnerExpToReceive)
@@ -931,7 +931,6 @@ namespace DigitalWorldOnline.GameHost
         //    blocked = false; maybe for later??
         public int CalculateDamage(CharacterModel tamer, GameClient client, out double critBonusMultiplier, out bool blocked, IConfiguration configuration = null)
         {
-
             double baseDamage = tamer.Partner.AT;
 
             var random = new Random();
@@ -1004,7 +1003,6 @@ namespace DigitalWorldOnline.GameHost
 
                 BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
             }
-
             return (int)totalDamage ;
         }
 

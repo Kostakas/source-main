@@ -8,7 +8,7 @@
 
 <MudTable FixedHeader="true"
     FixedFooter="false"
-          ServerData="@(new Func<TableState, Task<TableData<HatchViewModel>>>(ServerReload))"
+          ServerData="ServerReload"
     Hover="true"
     SortLabel="Order by"
     Loading="true"

@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Hatchs
@@ -28,7 +29,7 @@ namespace DigitalWorldOnline.Admin.Pages.Hatchs
         private MudTextField<string> _filterParameter;
         private MudTable<HatchViewModel> _table;
 
-        private async Task<TableData<HatchViewModel>> ServerReload(TableState state)
+        private async Task<TableData<HatchViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var hatchs = await Sender.Send(
                 new GetHatchConfigsQuery(
@@ -68,7 +69,7 @@ namespace DigitalWorldOnline.Admin.Pages.Hatchs
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/hatchs/delete/{id}");
             else
                 await Refresh();

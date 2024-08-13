@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DigitalWorldOnline.Commons.Extensions;
 using DigitalWorldOnline.Commons.ViewModel.Clones;
+using System.Threading;
 
 namespace DigitalWorldOnline.Admin.Pages.Scans
 {
@@ -85,13 +86,13 @@ namespace DigitalWorldOnline.Admin.Pages.Scans
             StateHasChanged();
         }
 
-        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value)
+        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value, CancellationToken token)
         {
             if (string.IsNullOrEmpty(value) || value.Length < 3)
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    await _selectedItemAsset.Clear();
+                    await _selectedItemAsset.ClearAsync();
                 }
 
                 return new ItemAssetViewModel[0];

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Serilog;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Raids
@@ -75,7 +76,7 @@ namespace DigitalWorldOnline.Admin.Pages.Raids
             Nav.NavigateTo("/maps");
         }
 
-        private async Task<TableData<MobViewModel>> ServerReload(TableState state)
+        private async Task<TableData<MobViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var users = await Sender.Send(
                 new GetRaidsQuery(
@@ -112,7 +113,7 @@ namespace DigitalWorldOnline.Admin.Pages.Raids
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/raids/duplicate/{id}");
             else
                 await Refresh();
@@ -136,7 +137,7 @@ namespace DigitalWorldOnline.Admin.Pages.Raids
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/raids/delete/{id}");
             else
                 await Refresh();

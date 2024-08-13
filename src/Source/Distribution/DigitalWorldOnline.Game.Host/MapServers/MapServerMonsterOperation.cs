@@ -1,5 +1,6 @@
 ﻿using DigitalWorldOnline.Application.Separar.Commands.Update;
 using DigitalWorldOnline.Commons.Entities;
+using DigitalWorldOnline.Commons.Enums.Character;
 using DigitalWorldOnline.Commons.Enums.ClientEnums;
 using DigitalWorldOnline.Commons.Enums.Map;
 using DigitalWorldOnline.Commons.Extensions;
@@ -658,6 +659,62 @@ namespace DigitalWorldOnline.GameHost
             else
                 DropReward(map, mob);
         }
+        private long BonusPartnerExp(GameMap map, MobConfigModel mob)
+        {
+            long totalPartnerExp = 0;  // Initialize a variable to accumulate experience.
+
+            foreach (var tamer in mob.TargetTamers)
+            {
+                var targetClient = map.Clients.FirstOrDefault(x => x.TamerId == tamer?.Id);
+                if (targetClient == null)
+                    continue;
+
+                double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
+                double levelDifference = mob.Level - tamer.Partner.Level;
+                long additionalMultiplier = (long)(1 + levelDifference * 0.1);
+
+                var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) * expBonusMultiplier);
+
+                if (levelDifference > 1)
+                {
+                    partnerExpToReceive *= additionalMultiplier;  // Apply the multiplier to experience value
+                }
+
+                totalPartnerExp += partnerExpToReceive;  // Accumulate experience
+            }
+
+            return totalPartnerExp;
+        }
+
+
+        private long BonusTamerExp(GameMap map, MobConfigModel mob)
+        {
+            long totalTamerExp = 0;  // Initialize a variable to accumulate experience.
+
+            foreach (var tamer in mob.TargetTamers)
+            {
+                var targetClient = map.Clients.FirstOrDefault(x => x.TamerId == tamer?.Id);
+                if (targetClient == null)
+                    continue;
+
+                double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
+                double levelDifference = mob.Level - tamer.Partner.Level;
+                long additionalMultiplier = (long)(1 + levelDifference * 0.1);
+
+                var tamerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) * expBonusMultiplier);
+
+                if (levelDifference > 1)
+                {
+                    tamerExpToReceive *= additionalMultiplier;  // Apply the multiplier to experience value
+                }
+
+                totalTamerExp += tamerExpToReceive;  // Accumulate experience
+            }
+
+            return totalTamerExp;
+        }
+
+
 
         private void ExperienceReward(GameMap map, MobConfigModel mob)
         {
@@ -673,10 +730,7 @@ namespace DigitalWorldOnline.GameHost
                     continue;
 
                 double expBonusMultiplier = tamer.BonusEXP / 100.0 + targetClient.ServerExperience / 100.0;
-                double levelDifference = mob.Level - tamer.Partner.Level;
-                double additionalMultiplier = 1 + levelDifference * 0.2;
-
-                var tamerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) * expBonusMultiplier); //TODO: +bonus
+                var tamerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience)); //TODO: +bonus
 
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) == 0)
                     tamerExpToReceive = 0;
@@ -684,14 +738,7 @@ namespace DigitalWorldOnline.GameHost
                 if (tamerExpToReceive > 100) tamerExpToReceive += UtilitiesFunctions.RandomInt(-15, 15);
                 var tamerResult = ReceiveTamerExp(targetClient.Tamer, tamerExpToReceive);
 
-                var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) * expBonusMultiplier);
-
-                if (levelDifference > 1)
-                {
-                    // Apply the multiplier to both experience values
-                    partnerExpToReceive *= (int)additionalMultiplier;
-                    tamerExpToReceive *= (long)additionalMultiplier;
-                }
+                var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience));
 
 
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) == 0)
@@ -699,17 +746,17 @@ namespace DigitalWorldOnline.GameHost
 
                 if (partnerExpToReceive > 100) partnerExpToReceive += UtilitiesFunctions.RandomInt(-15, 15);
                 var partnerResult = ReceivePartnerExp(targetClient.Partner, mob, partnerExpToReceive);
-
-
+                var bonusTamer = BonusTamerExp(map, mob);
+                var bonusPartner = BonusPartnerExp(map, mob);
 
                 targetClient.Send(
                     new ReceiveExpPacket(
                         tamerExpToReceive,
-                        0,//TODO: obter os bonus
+                        bonusTamer,
                         targetClient.Tamer.CurrentExperience,
                         targetClient.Partner.GeneralHandler,
                         partnerExpToReceive,
-                        0,//TODO: obter os bonus
+                        bonusPartner,//TODO: obter os bonus
                         targetClient.Partner.CurrentExperience,
                         targetClient.Partner.CurrentEvolution.SkillExperience
                     )
@@ -916,6 +963,7 @@ namespace DigitalWorldOnline.GameHost
 
             if (bitsReward != null && bitsReward.Chance >= UtilitiesFunctions.RandomDouble())
             {
+
                 if (targetClient.Tamer.HasAura && targetClient.Tamer.Aura.ItemInfo.Section == 2100)
                 {
                     var amount = UtilitiesFunctions.RandomInt(bitsReward.MinAmount, bitsReward.MaxAmount) * int.Parse(configuration["GameConfigs:BitDropCount:MultiplyDropCount"] ?? "0.1");
@@ -937,13 +985,12 @@ namespace DigitalWorldOnline.GameHost
                     var drop = _dropManager.CreateBitDrop(
                         targetClient.TamerId,
                         targetClient.Tamer.GeneralHandler,
-                        bitsReward.MinAmount,
+                        bitsReward.MinAmount * int.Parse(configuration["GameConfigs:BitDropCount:MultiplyDropCount"] ?? "0.1"),
                         bitsReward.MaxAmount * int.Parse(configuration["GameConfigs:BitDropCount:MultiplyDropCount"] ?? "0.1"),
                         mob.CurrentLocation.MapId,
                         mob.CurrentLocation.X,
                         mob.CurrentLocation.Y
                     );
-
                     map.AddMapDrop(drop);
                 }
             }
@@ -1031,7 +1078,7 @@ namespace DigitalWorldOnline.GameHost
                                 targetClient.Tamer.Id,
                                 targetClient.Tamer.GeneralHandler,
                                 itemDrop.ItemId,
-                                itemDrop.MinAmount,
+                                itemDrop.MinAmount * int.Parse(configuration["GameConfigs:ItemDropCount:MultiplyDropCount"] ?? "0.1"),
                                 itemDrop.MaxAmount * int.Parse(configuration["GameConfigs:ItemDropCount:MultiplyDropCount"] ?? "0.1"),
                                 mob.CurrentLocation.MapId,
                                 mob.CurrentLocation.X,

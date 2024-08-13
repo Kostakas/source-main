@@ -11,6 +11,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Mobs
@@ -75,13 +76,13 @@ namespace DigitalWorldOnline.Admin.Pages.Mobs
             }
         }
 
-        private async Task<IEnumerable<MobAssetViewModel>> GetMobAssets(string value)
+        private async Task<IEnumerable<MobAssetViewModel>> GetMobAssets(string value,CancellationToken token)
         {
             if (string.IsNullOrEmpty(value) || value.Length < 3)
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    _selectedMobAsset.Clear();
+                    _selectedMobAsset.ClearAsync();
                 }
 
                 return Array.Empty<MobAssetViewModel>();
@@ -92,13 +93,13 @@ namespace DigitalWorldOnline.Admin.Pages.Mobs
             return Mapper.Map<List<MobAssetViewModel>>(assets.Registers);
         }
 
-        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value)
+        private async Task<IEnumerable<ItemAssetViewModel>> GetItemAssets(string value,CancellationToken token)
         {
             if (string.IsNullOrEmpty(value) || value.Length < 3)
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    _selectedItemAsset.Clear();
+                    _selectedItemAsset.ClearAsync();
                 }
 
                 return Array.Empty<ItemAssetViewModel>();

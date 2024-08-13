@@ -63,7 +63,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 _logger.Verbose($"Character {client.Tamer} swapped partner {digivicePartner.Id}({digivicePartner.BaseType}) with partner " +
                     $"{archivePartner.Id}({archivePartner.Digimon!.BaseType}) on digivice slot {digiviceSlot} and archive slot {archiveSlot} for {price} bits.");
             }
-
             client.Send(new DigimonArchiveManagePacket(digiviceSlot, archiveSlot, price));
         }
 

@@ -35,7 +35,7 @@
 </MudExpansionPanels>
 <MudTable FixedHeader="true"
           FixedFooter="false"
-          ServerData="@(new Func<TableState, Task<TableData<SummonViewModel>>>(ServerReload))"
+          ServerData="ServerReload"
           Hover="true"
           SortLabel="Order by"
           Loading="true"

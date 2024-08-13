@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Maps
@@ -28,7 +29,7 @@ namespace DigitalWorldOnline.Admin.Pages.Maps
         private MudTextField<string> _filterParameter;
         private MudTable<MapViewModel> _table;
 
-        private async Task<TableData<MapViewModel>> ServerReload(TableState state)
+        private async Task<TableData<MapViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var users = await Sender.Send(
                 new GetMapsQuery(
@@ -73,7 +74,7 @@ namespace DigitalWorldOnline.Admin.Pages.Maps
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/maps/reset/{id}");
             else
                 await Refresh();

@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DigitalWorldOnline.Admin.Pages.Containers
@@ -28,7 +29,7 @@ namespace DigitalWorldOnline.Admin.Pages.Containers
         private MudTextField<string> _filterParameter;
         private MudTable<ContainerViewModel> _table;
 
-        private async Task<TableData<ContainerViewModel>> ServerReload(TableState state)
+        private async Task<TableData<ContainerViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var containers = await Sender.Send(
                 new GetContainersQuery(
@@ -68,7 +69,7 @@ namespace DigitalWorldOnline.Admin.Pages.Containers
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/containers/delete/{id}");
             else
                 await Refresh();

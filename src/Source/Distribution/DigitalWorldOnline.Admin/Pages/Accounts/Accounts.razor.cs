@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace DigitalWorldOnline.Admin.Pages.Accounts
 {
@@ -28,7 +29,7 @@ namespace DigitalWorldOnline.Admin.Pages.Accounts
         private MudTextField<string> _filterParameter;
         private MudTable<AccountViewModel> _table;
 
-        private async Task<TableData<AccountViewModel>> ServerReload(TableState state)
+        private async Task<TableData<AccountViewModel>> ServerReload(TableState state, CancellationToken token)
         {
             var users = await Sender.Send(
                 new GetAccountsQuery(
@@ -68,7 +69,7 @@ namespace DigitalWorldOnline.Admin.Pages.Accounts
 
             var result = await dialog.Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
                 Nav.NavigateTo($"/accounts/delete/{id}");
             else
                 await Refresh();
