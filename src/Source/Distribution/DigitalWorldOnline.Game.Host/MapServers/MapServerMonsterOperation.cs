@@ -756,7 +756,7 @@ namespace DigitalWorldOnline.GameHost
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.TamerExperience) == 0)
                     tamerExpToReceive = 0;
 
-                if (tamerExpToReceive > 100) tamerExpToReceive += UtilitiesFunctions.RandomInt(-15, 15);
+                if (tamerExpToReceive > 100) tamerExpToReceive += UtilitiesFunctions.RandomInt(-35, 45);
                 var tamerResult = ReceiveTamerExp(targetClient.Tamer, tamerExpToReceive);
 
                 var partnerExpToReceive = (long)(CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience));
@@ -766,7 +766,7 @@ namespace DigitalWorldOnline.GameHost
                 if (CalculateExperience(tamer.Partner.Level, mob.Level, mob.ExpReward.DigimonExperience) == 0)
                     partnerExpToReceive = 0;
 
-                if (partnerExpToReceive > 100) partnerExpToReceive += UtilitiesFunctions.RandomInt(-15, 15);
+                if (partnerExpToReceive > 100) partnerExpToReceive += UtilitiesFunctions.RandomInt(-35, 45);
                 var partnerResult = ReceivePartnerExp(targetClient.Partner, mob, partnerExpToReceive);
 
                 var totalTamerExp = BonusTamerExp(map, mob);

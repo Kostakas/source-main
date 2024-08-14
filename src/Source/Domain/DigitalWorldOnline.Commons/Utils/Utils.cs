@@ -97,6 +97,11 @@ namespace DigitalWorldOnline.Commons.Utils
                 return length;
             }
         }
+        public static float RandomFloat(double minValue, double maxValue)
+        {
+            Random rand = new Random();
+            return (float)(minValue + (rand.NextDouble() * (maxValue - minValue)));
+        }
         public static byte[] GroupPackets(params byte[][] packets)
         {
             var resultArray = new byte[packets.Sum(a => a.Length)];

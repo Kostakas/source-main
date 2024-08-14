@@ -87,7 +87,7 @@ namespace DigitalWorldOnline.GameHost
                         map.UpdateMobsList();
                 }
 
-                _lastMobsSearch = DateTime.Now.AddSeconds(30);
+                _lastMobsSearch = DateTime.Now.AddSeconds(4);
             }
         }
 
