@@ -160,7 +160,9 @@ namespace DigitalWorldOnline.GameHost
                             {
                                 item.SetFirstExpired(false);
 
-                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabInven, item.Slot, item.ItemId, ExpiredTypeEnum.Quit));
+                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabInven, item.Slot, item.ItemId, ExpiredTypeEnum.Remove));
+                                tamer.Inventory.RemoveOrReduceItem(item, item.Amount);
+
                             }
                             else
                             {
@@ -180,7 +182,9 @@ namespace DigitalWorldOnline.GameHost
                             {
                                 item.SetFirstExpired(false);
 
-                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabWarehouse, item.Slot, item.ItemId, ExpiredTypeEnum.Quit));
+                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabWarehouse, item.Slot, item.ItemId, ExpiredTypeEnum.Remove));
+                                tamer.Inventory.RemoveOrReduceItem(item, item.Amount);
+
                             }
                             else
                             {
@@ -200,7 +204,8 @@ namespace DigitalWorldOnline.GameHost
                             {
                                 item.SetFirstExpired(false);
 
-                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabShareStash, item.Slot, item.ItemId, ExpiredTypeEnum.Quit));
+                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabShareStash, item.Slot, item.ItemId, ExpiredTypeEnum.Remove));
+                                tamer.Inventory.RemoveOrReduceItem(item, item.Amount);
                             }
                             else
                             {
@@ -220,7 +225,8 @@ namespace DigitalWorldOnline.GameHost
                             {
                                 item.SetFirstExpired(false);
 
-                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabEquip, item.Slot, item.ItemId, ExpiredTypeEnum.Quit));
+                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabEquip, item.Slot, item.ItemId, ExpiredTypeEnum.Remove));
+                                tamer.Equipment.RemoveOrReduceItem(item, item.Amount);
                             }
                             else
                             {

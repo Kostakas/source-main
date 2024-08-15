@@ -1248,7 +1248,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
             _handlerValue = ProperModel + mapHandler;
         }
 
-        public void SetLastExpiredItemsCheck() => LastExpiredItemsCheck = DateTime.Now.AddSeconds(60);
+        public void SetLastExpiredItemsCheck() => LastExpiredItemsCheck = DateTime.Now.AddSeconds(15);
         /// <summary>
         /// Restores the previous character condition.
         /// </summary>
