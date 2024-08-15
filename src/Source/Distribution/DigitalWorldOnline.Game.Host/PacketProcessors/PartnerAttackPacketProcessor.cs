@@ -949,36 +949,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             blocked = targetMob.BLValue >= UtilitiesFunctions.RandomDouble();
 
-            //var levelBonusMultiplier = client.Tamer.Partner.Level > targetMob.Level ?
-            //    (0.01f * (client.Tamer.Partner.Level - targetMob.Level)) : 0; //TODO: externalizar no portal
-
-            //var attributeMultiplier = 0.00;
-            //if (client.Tamer.Partner.BaseInfo.Attribute.HasAttributeAdvantage(targetMob.Attribute))
-            //{
-            //    var vlrAtual = client.Tamer.Partner.GetAttributeExperience();
-            //    var bonusMax = 50.0; //TODO: externalizar?
-            //    var expMax = 10000; //TODO: externalizar?
-
-            //    attributeMultiplier = (bonusMax * vlrAtual) / expMax;
-            //}
-            //else if (targetMob.Attribute.HasAttributeAdvantage(client.Tamer.Partner.BaseInfo.Attribute))
-            //{
-            //    attributeMultiplier = -0.25;
-            //}
-
-            //var elementMultiplier = 0.00;
-            //if (client.Tamer.Partner.BaseInfo.Element.HasElementAdvantage(targetMob.Element))
-            //{
-            //    var vlrAtual = client.Tamer.Partner.GetElementExperience();
-            //    var bonusMax = 0.50; //TODO: externalizar?
-            //    var expMax = 10000; //TODO: externalizar?
-
-            //    elementMultiplier = (bonusMax * vlrAtual) / expMax;
-            //}
-            //else if (targetMob.Element.HasElementAdvantage(client.Tamer.Partner.BaseInfo.Element))
-            //{
-            //    elementMultiplier = -0.25;
-            //}
 
             baseDamage /= blocked ? 2 : 1;
 
@@ -990,11 +960,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             return baseDamage;
 
-            //return (int)Math.Floor(baseDamage +
-            //    (baseDamage * critBonusMultiplier) +
-            //    (baseDamage * levelBonusMultiplier) +
-            //    (baseDamage * attributeMultiplier) +
-            //    (baseDamage * elementMultiplier));
         }
         private static int CalculateFinalDamage(GameClient client, SummonMobModel targetMob, out double critBonusMultiplier, out bool blocked)
         {
@@ -1023,36 +988,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             blocked = targetMob.BLValue >= UtilitiesFunctions.RandomDouble();
 
-            //var levelBonusMultiplier = client.Tamer.Partner.Level > targetMob.Level ?
-            //    (0.01f * (client.Tamer.Partner.Level - targetMob.Level)) : 0; //TODO: externalizar no portal
-
-            //var attributeMultiplier = 0.00;
-            //if (client.Tamer.Partner.BaseInfo.Attribute.HasAttributeAdvantage(targetMob.Attribute))
-            //{
-            //    var vlrAtual = client.Tamer.Partner.GetAttributeExperience();
-            //    var bonusMax = 50.0; //TODO: externalizar?
-            //    var expMax = 10000; //TODO: externalizar?
-
-            //    attributeMultiplier = (bonusMax * vlrAtual) / expMax;
-            //}
-            //else if (targetMob.Attribute.HasAttributeAdvantage(client.Tamer.Partner.BaseInfo.Attribute))
-            //{
-            //    attributeMultiplier = -0.25;
-            //}
-
-            //var elementMultiplier = 0.00;
-            //if (client.Tamer.Partner.BaseInfo.Element.HasElementAdvantage(targetMob.Element))
-            //{
-            //    var vlrAtual = client.Tamer.Partner.GetElementExperience();
-            //    var bonusMax = 0.50; //TODO: externalizar?
-            //    var expMax = 10000; //TODO: externalizar?
-
-            //    elementMultiplier = (bonusMax * vlrAtual) / expMax;
-            //}
-            //else if (targetMob.Element.HasElementAdvantage(client.Tamer.Partner.BaseInfo.Element))
-            //{
-            //    elementMultiplier = -0.25;
-            //}
 
             baseDamage /= blocked ? 2 : 1;
 
@@ -1064,11 +999,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             return baseDamage;
 
-            //return (int)Math.Floor(baseDamage +
-            //    (baseDamage * critBonusMultiplier) +
-            //    (baseDamage * levelBonusMultiplier) +
-            //    (baseDamage * attributeMultiplier) +
-            //    (baseDamage * elementMultiplier));
         }
 
         private static int CalculateFinalDamage(GameClient client, DigimonModel? targetPartner, out double critBonusMultiplier, out bool blocked)

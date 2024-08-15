@@ -35,6 +35,10 @@ namespace DigitalWorldOnline.Commons.Models.Character
         private int _currentHP = 0;
         private int _currentDS = 0;
 
+
+
+
+
         /// <summary>
         /// Current character health points.
         /// </summary>
@@ -492,7 +496,8 @@ namespace DigitalWorldOnline.Commons.Models.Character
             Level = 1;
             CurrentHp = 40;
             CurrentDs = 40;
-            Size = 10000; //TODO: externalizar
+            Size = 15000; //TODO: externalizar
+            
 
             State = CharacterStateEnum.Disconnected;
             EventState = CharacterEventStateEnum.None;
@@ -1297,6 +1302,8 @@ namespace DigitalWorldOnline.Commons.Models.Character
         /// Updates the character's buffs check timer.
         /// </summary>
         public void UpdateBuffsCheckTime() => LastBuffsCheck = DateTime.Now.AddSeconds(15);
+
+        public void UpdateExpCheckTime() => LastBuffsCheck = DateTime.Now.AddSeconds(15);
 
 
         /// <summary>

@@ -5,6 +5,7 @@
 <MudThemeProvider Theme="_currentTheme"></MudThemeProvider>
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 @if(navMan.Uri.Contains("/downloads"))
 {
@@ -82,11 +83,22 @@ else
 
     private MudTheme _currentTheme = new MudTheme()
     {
+        PaletteLight = new PaletteLight()
+        {
+            AppbarBackground = "#02fb66",
+            Primary = "#fb020e",
+            DrawerIcon = "#02fb66"
+        },
         PaletteDark = new PaletteDark()
         {
-                AppbarBackground = "#82817e",
-                Primary = "#155883",
-                DrawerIcon = "#55ecfa"
-            }
+            AppbarBackground = "#02fb66",
+            Primary = "#fb020e",
+            DrawerIcon = "#02fb66"
+        },
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "260px",
+            DrawerWidthRight = "300px"
+        }
     };
-}
+    }

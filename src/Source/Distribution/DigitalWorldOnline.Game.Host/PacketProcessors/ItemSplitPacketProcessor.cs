@@ -42,6 +42,13 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             var itemListMovimentation = UtilitiesFunctions.SwitchItemList(originSlot, destinationSlot);
 
             _logger.Verbose($"Character {client.TamerId} splited {itemListMovimentation} from slot {originSlot} to {destinationSlot} x{amountToSplit}.");
+            var sourceItemCheck = client.Tamer.Inventory.FindItemBySlot(originSlot);
+            if (sourceItemCheck.Amount < amountToSplit)
+            {
+                client.Disconnect();
+                return;
+            }
+
 
             switch (itemListMovimentation)
             {

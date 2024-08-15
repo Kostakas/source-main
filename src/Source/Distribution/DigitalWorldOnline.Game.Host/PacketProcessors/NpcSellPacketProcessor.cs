@@ -42,6 +42,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 return;
             }
 
+            if (sellItem.Amount < sellAmount)
+            {
+                client.Disconnect();
+            }
             var bits = sellAmount * sellItem.ItemInfo!.SellPrice;
             client.Tamer.Inventory.AddBits(bits);
 
