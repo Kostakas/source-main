@@ -236,24 +236,16 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                             if (accelerator == null)
                                 accelerator = client.Tamer.Inventory.FindItemById(41002);
-                            if (evoInfo.RequiredItem > 0)
+                            if (levelCheck4 && client.Tamer.Inventory.RemoveOrReduceItem(accelerator,3))
                             {
-                                if (!levelCheck4
-                                    && client.Tamer.Inventory.RemoveOrReduceItem(accelerator, 3))
-                                {
-                                    client.Send(new DigimonEvolutionFailPacket());
-                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
-                                    return;
-                                }
+                                //evolve
                             }
                             else
                             {
-                                if (!levelCheck4)
-                                {
-                                    client.Send(new DigimonEvolutionFailPacket());
-                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
-                                    return;
-                                }
+                                // Either the level requirement wasn't met, or the item couldn't be consumed.
+                                client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough accelerators or level to digivolve"));
+                                return;
                             }
 
                             client.Tamer.ActiveEvolution.SetDs(40);
@@ -377,15 +369,27 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     case EvolutionRankEnum.JogressX:
                     case EvolutionRankEnum.BurstModeX:
                         {
-                            //TODO: Teste BM X (custo e efeito)
                             evoEffect = DigimonEvolutionEffectEnum.BurstMode;
 
-                            if (!levelCheck5)
+                            var accelerator = client.Tamer.Inventory.FindItemById(9400);
+
+                            if (accelerator == null)
+                                accelerator = client.Tamer.Inventory.FindItemById(41002);
+                            if (levelCheck4 && client.Tamer.Inventory.RemoveOrReduceItem(accelerator,3))
                             {
+                                //evolve
+                            }
+                            else
+                            {
+                                // Either the level requirement wasn't met, or the item couldn't be consumed.
                                 client.Send(new DigimonEvolutionFailPacket());
-                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
+                                client.Send(new SystemMessagePacket($"Not enough accelerators or level to digivolve"));
                                 return;
                             }
+
+                            client.Tamer.ActiveEvolution.SetDs(40);
+                            client.Send(new LoadInventoryPacket(client.Tamer.Inventory,InventoryTypeEnum.Inventory));
+                        
 
                             client.Tamer.ConsumeXg(280);
                             client.Tamer.ActiveEvolution.SetXg(1);
