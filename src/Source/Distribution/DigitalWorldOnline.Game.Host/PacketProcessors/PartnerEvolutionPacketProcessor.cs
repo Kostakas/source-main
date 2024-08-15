@@ -7,13 +7,16 @@ using DigitalWorldOnline.Commons.Enums.PacketProcessor;
 using DigitalWorldOnline.Commons.Interfaces;
 using DigitalWorldOnline.Commons.Models;
 using DigitalWorldOnline.Commons.Models.Character;
+using DigitalWorldOnline.Commons.Packets.Chat;
 using DigitalWorldOnline.Commons.Packets.GameServer;
 using DigitalWorldOnline.Commons.Packets.GameServer.Combat;
 using DigitalWorldOnline.Commons.Packets.Items;
 using DigitalWorldOnline.Commons.Utils;
 using DigitalWorldOnline.Game.Managers;
+using DigitalWorldOnline.Game.Models.Configuration;
 using DigitalWorldOnline.GameHost;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 
@@ -30,6 +33,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
         private readonly DungeonsServer _dungeonServer;
         private readonly ISender _sender;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
         public PartnerEvolutionPacketProcessor(
             PartyManager partyManager,
@@ -38,7 +42,8 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             MapServer mapServer,
             ISender sender,
             ILogger logger,
-            DungeonsServer dungeonServer)
+            DungeonsServer dungeonServer,
+            IConfiguration configuration)
         {
             _partyManager = partyManager;
             _statusManager = statusManager;
@@ -47,6 +52,8 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             _sender = sender;
             _logger = logger;
             _dungeonServer = dungeonServer;
+            _configuration = configuration;
+
         }
 
         public async Task Process(GameClient client, byte[] packetData)
@@ -123,6 +130,50 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             {
                 var evolutionType = _assets.DigimonBaseInfo.First(x => x.Type == evoLine[evoStage].Type).EvolutionType;
                 var targetEvo = _assets.DigimonBaseInfo.First(x => x.Type == evoLine[evoStage].Type);
+
+
+                var evolutionConfigs = new[]
+                {
+                    new { Key = "EvolutionChampion", Ds = 20 },
+                    new { Key = "EvolutionUltimate", Ds = 50 },
+                    new { Key = "EvolutionMega", Ds = 150 },
+                    new { Key = "EvolutionBurstMode", Ds = 200 },
+                    new { Key = "EvolutionCapsule", Ds = 150 },
+                    new { Key = "EvolutionJogress", Ds = 300 }
+                };
+
+                int[] levelRequirements = new int[evolutionConfigs.Length];
+                bool[] levelChecks = new bool[evolutionConfigs.Length];
+
+                for (int i = 0;i < evolutionConfigs.Length;i++)
+                {
+                    // Consume DS for the current evolution type
+                    bool dsCheck = client.Tamer.ConsumeDs(evolutionConfigs[i].Ds);
+
+                    // Get the level requirement from configuration
+                    string levelRequirementStr = _configuration[$"GameConfigs:{evolutionConfigs[i].Key}:Level"] ?? "1";
+
+                    // Parse the level requirement
+                    if (!int.TryParse(levelRequirementStr,out int levelRequirement))
+                    {
+                        levelRequirement = 1; // Default value if parsing fails
+                    }
+
+                    levelRequirements[i] = levelRequirement;
+                    levelChecks[i] = client.Partner.Level >= levelRequirement;
+                }
+
+                // Access the level checks using indices
+                bool levelCheck = levelChecks[0];
+                bool levelCheck2 = levelChecks[1];
+                bool levelCheck3 = levelChecks[2];
+                bool levelCheck4 = levelChecks[3];
+                bool levelCheck5 = levelChecks[4];
+                bool levelCheck6 = levelChecks[5];
+
+
+
+
                 switch ((EvolutionRankEnum)evolutionType)
                 {
                     case EvolutionRankEnum.Rookie:
@@ -136,10 +187,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     case EvolutionRankEnum.Champion:
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
-
-                            if (client.Partner.Level < evoInfo.UnlockLevel || !client.Tamer.ConsumeDs(20))
-                            {
+                            if (!levelCheck)
+                            { 
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -151,9 +202,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
 
-                            if (client.Partner.Level < evoInfo.UnlockLevel || !client.Tamer.ConsumeDs(50))
+                            if (!levelCheck2)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -165,9 +217,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
 
-                            if (client.Partner.Level < evoInfo.UnlockLevel || !client.Tamer.ConsumeDs(152))
+                            if (!levelCheck3)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -185,18 +238,20 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                 accelerator = client.Tamer.Inventory.FindItemById(41002);
                             if (evoInfo.RequiredItem > 0)
                             {
-                                if (client.Partner.Level < evoInfo.UnlockLevel && !client.Tamer.ConsumeDs(148)
+                                if (!levelCheck4
                                     && client.Tamer.Inventory.RemoveOrReduceItem(accelerator, 3))
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
+                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                     return;
                                 }
                             }
                             else
                             {
-                                if (client.Partner.Level < evoInfo.UnlockLevel && !client.Tamer.ConsumeDs(148))
+                                if (!levelCheck4)
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
+                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                     return;
                                 }
                             }
@@ -214,18 +269,20 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             {
                                 var accelerator = client.Tamer.Inventory.FindItemById(evoInfo.RequiredItem);
 
-                                if (client.Partner.Level < evoInfo.UnlockLevel && !client.Tamer.ConsumeDs(180)
+                                if (!levelCheck6
                                     && !client.Tamer.Inventory.RemoveOrReduceItem(accelerator, 1))
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
+                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                     return;
                                 }
                             }
                             else
                             {
-                                if (client.Partner.Level < evoInfo.UnlockLevel && !client.Tamer.ConsumeDs(180))
+                                if (!levelCheck6)
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
+                                    client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                     return;
                                 }
 
@@ -242,6 +299,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             if (client.Partner.Level < evoInfo.UnlockLevel)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -254,9 +312,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
 
-                            if (client.Partner.Level < evoInfo.UnlockLevel)
+                            if (!levelCheck)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -269,9 +328,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
                            
-                            if (client.Partner.Level < evoInfo.UnlockLevel)
+                            if (!levelCheck2)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
                             client.Tamer.ConsumeXg(130);
@@ -285,9 +345,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             evoEffect = DigimonEvolutionEffectEnum.Default;
                             
                           
-                            if (client.Partner.Level < evoInfo.UnlockLevel)
+                            if (!levelCheck3)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -301,9 +362,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Unknown;
 
-                            if (client.Partner.Level < evoInfo.UnlockLevel || !client.Tamer.ConsumeDs(75))
+                            if (!levelCheck5)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -318,9 +380,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             //TODO: Teste BM X (custo e efeito)
                             evoEffect = DigimonEvolutionEffectEnum.BurstMode;
 
-                            if (client.Partner.Level < evoInfo.UnlockLevel)
+                            if (!levelCheck5)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
+                                client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                                 return;
                             }
 
@@ -332,6 +395,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     default:
                         {
                             client.Send(new DigimonEvolutionFailPacket());
+                            client.Send(new SystemMessagePacket($"Not enough level to digivolve"));
                             return;
                         }
                 }

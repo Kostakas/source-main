@@ -15,6 +15,16 @@ namespace DigitalWorldOnline.Game.Models.Configuration
 
         public BitDropCountConfig BitDropCount { get; set; }
 
+        public EvolutionChampion evolutionChampion { get; set; }
+        public EvolutionUltimate evolutionUltimate { get; set; }
+        public EvolutionMega evolutionMega { get; set; }
+
+        public EvolutionBurstMode evolutionBurstMode { get; set; }
+
+        public EvolutionCapsule evolutionCapsule { get; set; }
+        public EvolutionJogress evolutionJogress { get; set; }
+
+
         public class AttributeConfig
         {
             public bool ApplyDamage { get; set; }
@@ -39,6 +49,38 @@ namespace DigitalWorldOnline.Game.Models.Configuration
         {
             public bool ApplyDropAddition { get; set; }
             public int MultiplyDropCount { get; set; }
+        }
+
+        public class EvolutionChampion
+        {
+            public bool Apply {  get; set; }
+            public int Level { get; set; }
+
+        }
+        public class EvolutionUltimate
+        {
+            public bool Apply { get; set; }
+            public int Level { get; set; }
+        }
+        public class EvolutionMega
+        {
+            public bool Apply { get; set; }
+            public int Level { get; set; }
+        }
+        public class EvolutionCapsule
+        {
+            public bool Apply { get; set; }
+            public int Level { get; set; }
+        }
+        public class EvolutionBurstMode
+        {
+            public bool Apply { get; set; }
+            public int Level { get; set; }
+        }
+        public class EvolutionJogress
+        {
+            public bool Apply { get; set; }
+            public int Level { get; set; }
         }
     }
 }
