@@ -1286,7 +1286,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             }
             else if (totalDamage > 0)
             {
-                string message = $"I Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill damage";
+                string message = $" Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill DMG";
 
                 // Broadcast the message
                 _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());

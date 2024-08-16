@@ -994,6 +994,7 @@ namespace DigitalWorldOnline.GameHost
             // Level-based bonus damage calculation
             double levelBonusMultiplier = tamer.Partner.Level > tamer.TargetMob.Level ? (0.01 * (tamer.Partner.Level - tamer.TargetMob.Level)) : 0;
             int levelBonusDamage = (int)(baseDamage * levelBonusMultiplier);
+            double enemyDefence = ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));
 
             // Attribute and element damage calculations
             double attributeDamage = GetAttributeDamage(tamer, configuration);
@@ -1021,19 +1022,19 @@ namespace DigitalWorldOnline.GameHost
                 critBonusMultiplier = 0;
             }
 
-            double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage - ((client.Tamer.TargetMob.DEValue / 2) + (tamer.TargetMob.Level * 20));
+            double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage - enemyDefence;
 
             // Broadcast attribute damage message if applicable
             if (attributeDamage != 0)
             {
-                string attributeMessage = $"I dealt {Math.Floor(attributeDamage)} Attribute damage!";
+                string attributeMessage = $"More {Math.Floor(attributeDamage)} Attribute DMG!";
                 BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
             }
 
             // Broadcast element damage message if applicable
             if (elementDamage != 0)
             {
-                string elementMessage = $"I dealt {Math.Floor(elementDamage)} Element damage!";
+                string elementMessage = $"More {Math.Floor(elementDamage)} Element DMG!";
                 string receiverName = client.Tamer.Partner.Name;
                 client.Send(new ChatMessagePacket(elementMessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Partner.Name, receiverName));
             }
@@ -1047,8 +1048,8 @@ namespace DigitalWorldOnline.GameHost
             else if (totalDamage > 0)
             {
                 string message = isCriticalHit
-                    ? $"Critical Hit! I dealt {Math.Floor(totalDamage)} damage"
-                    : $"I dealt {Math.Floor(totalDamage)} damage";
+                    ? $"{Math.Floor(totalDamage)} Crit DMG @{enemyDefence} enemy DE"
+                    : $"{Math.Floor(totalDamage)} DMG @{enemyDefence} enemy DE";
 
                 BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
             }
