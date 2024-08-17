@@ -112,7 +112,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 {
                     switch (apply.Type)
                     {
-
+                        case SkillCodeApplyTypeEnum.Unknown105:
                         case SkillCodeApplyTypeEnum.Default:
                             {
                                 switch (apply.Attribute)

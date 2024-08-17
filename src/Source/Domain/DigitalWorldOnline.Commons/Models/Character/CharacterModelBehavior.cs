@@ -887,10 +887,11 @@ namespace DigitalWorldOnline.Commons.Models.Character
                         switch (apply.Type)
                         {
                             case SkillCodeApplyTypeEnum.Default:
+                            case SkillCodeApplyTypeEnum.Unknown105:
+
                                 totalValue += apply.Value;
                                 break;
 
-                            case SkillCodeApplyTypeEnum.Unknown105:
                             case SkillCodeApplyTypeEnum.Percent:
                                 totalValue += (int)(baseValue * (decimal)apply.Value / 100);
                                 break;
@@ -1134,6 +1135,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
 
                             case SkillCodeApplyTypeEnum.AlsoPercent:
                             case SkillCodeApplyTypeEnum.Percent:
+                            case SkillCodeApplyTypeEnum.Unknown105:
                                 {
 
                                     SomaValue += apply.Value + (buff.TypeN) * apply.IncreaseValue;
