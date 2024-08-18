@@ -48,8 +48,8 @@ namespace DigitalWorldOnline.Commons.Models.Character
             {
                 3 => UtilitiesFunctions.RandomShort(8200, 10000),
                 4 => UtilitiesFunctions.RandomShort(11000, 12500),
-                5 => UtilitiesFunctions.RandomShort(11800, 13000),
-                6 => UtilitiesFunctions.RandomShort(15800, 17000),
+                5 => UtilitiesFunctions.RandomShort(11800, 12500),
+                6 => UtilitiesFunctions.RandomShort(13000, 14000),
                 _ => 0,
             };
         }
@@ -66,7 +66,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
                 DigimonHatchGradeEnum.Default => size == 10000,
                 DigimonHatchGradeEnum.High => size == 12500,
                 DigimonHatchGradeEnum.Perfect => size == 13000,
-                DigimonHatchGradeEnum.Transcend => size == 17000,
+                DigimonHatchGradeEnum.Transcend => size == 14000,
                 _ => false
             };
         }

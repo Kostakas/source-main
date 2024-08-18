@@ -190,9 +190,10 @@ namespace DigitalWorldOnline.Commons.Models.Map
             #region Hit Damage
             var baseDamage = mob.ATValue + UtilitiesFunctions.RandomInt(1, 15);
 
+            if (mob.Class == 8) baseDamage *= UtilitiesFunctions.RandomInt(2,3);
+
 
             if (baseDamage < 0) baseDamage = 0;
-
             var critBonusMultiplier = 0.00;
             double critChance = mob.CTValue / 100;
             if (critChance >= UtilitiesFunctions.RandomInt(100))
@@ -224,7 +225,6 @@ namespace DigitalWorldOnline.Commons.Models.Map
                 (baseDamage * elementMultiplier)) -
                 (mob.Target.DE);
             #endregion
-
             if (finalDmg <= 0) finalDmg = 1;
 
             var previousHp = mob.Target.CurrentHp;
@@ -330,7 +330,12 @@ namespace DigitalWorldOnline.Commons.Models.Map
                     {
                         List<CharacterModel> targetTamers = new List<CharacterModel>();
 
-                        var finalDamage = targetSkill.MaxValue - mob.Target.DE * 2;
+                        var finalDamage = targetSkill.MaxValue;
+                        var digimonDefence = mob.Target.DE;
+
+                        if (finalDamage < 300 && mob.Class == 8) finalDamage *= UtilitiesFunctions.RandomInt(1,10);
+
+                        if (finalDamage > 8500 ) finalDamage -= digimonDefence * 9;
 
                         // Crie uma cópia da lista mob.TargetTamers para iterar sobre ela
                         var targetTamersCopy = new List<CharacterModel>(mob.TargetTamers);
@@ -416,7 +421,7 @@ namespace DigitalWorldOnline.Commons.Models.Map
                     {
                         List<CharacterModel> targetTamers = new List<CharacterModel>();
 
-                        var finalDamage = targetSkill.MaxValue - mob.Target.DE * 2;
+                        var finalDamage = targetSkill.MaxValue + mob.ATValue - mob.Target.DE * 2;
 
                         // Crie uma cópia da lista mob.TargetTamers para iterar sobre ela
                         var targetTamersCopy = new List<CharacterModel>(mob.TargetTamers);

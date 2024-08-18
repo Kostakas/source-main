@@ -311,7 +311,8 @@ namespace DigitalWorldOnline.Commons.Models.Config
                         else
                         {
                             CurrentAction = MobActionEnum.Respawn;
-                            LastActionTime = DateTime.Now.AddSeconds(3 + RespawnInterval);
+                            if (RespawnInterval > 5) RespawnInterval = 3;
+                            LastActionTime = DateTime.Now.AddSeconds(1 + RespawnInterval);
                         }
                  
                     }

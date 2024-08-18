@@ -26,7 +26,7 @@ namespace DigitalWorldOnline.Commons.Packets.GameServer
             WriteInt(character.Partner.CurrentHp);
             WriteInt(character.Partner.CurrentDs);
             WriteShort(character.Partner.FS);
-            WriteShort(character.Partner.AT);
+            WriteUShort(character.Partner.AT);
             WriteShort(character.Partner.DE);
             WriteShort(character.Partner.CC);
             WriteShort((short)character.Partner.AS);

@@ -125,7 +125,7 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
 
         public short AR => (short)_baseAr;
 
-        public short AT
+        public ushort AT
         {
             get
             {
@@ -137,20 +137,22 @@ namespace DigitalWorldOnline.Commons.Models.Digimon
                     GetTitleStatus(StatusTypeEnum.AT) +
                     (Character?.AccessoryStatus(AccessoryStatusTypeEnum.AT) ?? 0) +
                     (Character?.ChipsetStatus(AccessoryStatusTypeEnum.AT) * 4 ?? 0) +
-                    BuffAttribute(_baseAt, SkillCodeApplyAttributeEnum.AT, SkillCodeApplyAttributeEnum.DA));
+                    BuffAttribute(_baseAt,SkillCodeApplyAttributeEnum.AT,SkillCodeApplyAttributeEnum.DA));
 
-                if (intValue > short.MaxValue)
+                // Clamp the value to the range of ushort
+                if (intValue > ushort.MaxValue)
                 {
-                    return (short)short.MaxValue; // Retorna o valor máximo de short
+                    return ushort.MaxValue; // Return the maximum value of ushort
                 }
-                else if (intValue < short.MinValue)
+                else if (intValue < 0)
                 {
-                    return (short)short.MinValue; // Retorna o valor mínimo de short
+                    return 0; // Return 0 for any negative values
                 }
 
-                return (short)intValue; // Retorna o valor como short
+                return (ushort)intValue; // Cast intValue to ushort
             }
         }
+
 
         public short BL => (short)
             (_baseBl +

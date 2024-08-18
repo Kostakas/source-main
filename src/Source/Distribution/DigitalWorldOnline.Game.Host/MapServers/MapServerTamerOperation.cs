@@ -1025,19 +1025,31 @@ namespace DigitalWorldOnline.GameHost
             double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage - enemyDefence;
 
             // Broadcast attribute damage message if applicable
-            if (attributeDamage != 0)
+            if (attributeDamage < 0)
             {
-                string attributeMessage = $"More {Math.Floor(attributeDamage)} Attribute DMG!";
+                string attributeMessage = $"{Math.Floor(attributeDamage)} Attribute DMG!";
                 BroadcastForUniqueTamer(client.TamerId, new GuildMessagePacket(client.Tamer.Partner.Name, attributeMessage).Serialize());
+            }
+            else if (attributeDamage > 0)
+            {
+                string attributeMessage = $"+{Math.Floor(attributeDamage)} Attribute DMG!";
+                BroadcastForUniqueTamer(client.TamerId,new GuildMessagePacket(client.Tamer.Partner.Name,attributeMessage).Serialize());
             }
 
             // Broadcast element damage message if applicable
-            if (elementDamage != 0)
+            if (elementDamage < 0)
             {
-                string elementMessage = $"More {Math.Floor(elementDamage)} Element DMG!";
+                string elementMessage = $"{Math.Floor(elementDamage)} Element DMG!";
                 string receiverName = client.Tamer.Partner.Name;
                 client.Send(new ChatMessagePacket(elementMessage, ChatTypeEnum.Whisper, WhisperResultEnum.Success, client.Tamer.Partner.Name, receiverName));
             }
+            else if (elementDamage > 0)
+            {
+                string elementMessage = $"+{Math.Floor(elementDamage)} Element DMG!";
+                string receiverName = client.Tamer.Partner.Name;
+                client.Send(new ChatMessagePacket(elementMessage,ChatTypeEnum.Whisper,WhisperResultEnum.Success,client.Tamer.Partner.Name,receiverName));
+            }
+
 
             // Broadcast total damage message if applicable
             if (totalDamage < 0)
