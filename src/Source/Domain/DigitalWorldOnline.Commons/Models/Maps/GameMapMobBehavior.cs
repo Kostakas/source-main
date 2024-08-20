@@ -190,7 +190,7 @@ namespace DigitalWorldOnline.Commons.Models.Map
             #region Hit Damage
             var baseDamage = mob.ATValue + UtilitiesFunctions.RandomInt(1, 15);
 
-            if (mob.Class == 8) baseDamage *= UtilitiesFunctions.RandomInt(2,3);
+            if (mob.Class == 8 && mob.Level < 90) baseDamage *= UtilitiesFunctions.RandomInt(2,3);
 
 
             if (baseDamage < 0) baseDamage = 0;
