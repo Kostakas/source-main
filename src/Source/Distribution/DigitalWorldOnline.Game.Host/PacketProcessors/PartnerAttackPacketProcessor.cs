@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using DigitalWorldOnline.GameHost;
 using Serilog;
 using System;
+using DigitalWorldOnline.Commons.Packets.Chat;
 
 namespace DigitalWorldOnline.Game.PacketProcessors
 {
@@ -268,7 +269,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                 #region Hit Damage
                                 var critBonusMultiplier = 0.00;
                                 var blocked = false;
-                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : CalculateFinalDamage(client, targetMob, out critBonusMultiplier, out blocked);
+                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _dungeonServer.CalculateDamageSummon( client.Tamer,client, out critBonusMultiplier, out blocked, _Configuration);
 
                                 if (finalDmg != 0 && !client.Tamer.GodMode)
                                 {
@@ -417,7 +418,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                 #region Hit Damage
                                 var critBonusMultiplier = 0.00;
                                 var blocked = false;
-                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
+                                var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _dungeonServer.CalculateDamage(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
 
                                 if (finalDmg != 0 && !client.Tamer.GodMode)
                                 {
@@ -568,7 +569,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             #region Hit Damage
                             var critBonusMultiplier = 0.00;
                             var blocked = false;
-                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : CalculateFinalDamage(client, targetMob, out critBonusMultiplier, out blocked);
+                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _dungeonServer.CalculateDamageSummon(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
 
                             if (finalDmg != 0 && !client.Tamer.GodMode)
                             {
@@ -922,84 +923,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
         //    return ElementVantage;
         //}
 
-        private static int CalculateFinalDamage(GameClient client, MobConfigModel? targetMob, out double critBonusMultiplier, out bool blocked)
-        {
-            var multiplier = 1;
-
-            if (client.Tamer.Partner.BaseInfo.Attribute.
-                HasAttributeAdvantage(targetMob.Attribute)
-                || client.Tamer.Partner.BaseInfo.Element
-                .HasElementAdvantage(targetMob.Element))
-                multiplier = 2;
-
-            var baseDamage = client.Tamer.Partner.AT * multiplier;
-
-            var random = new Random();
-            // Gere um valor aleatório entre 0% e 5% a mais do valor original
-            double percentagemBonus = random.NextDouble() * 0.05;
-
-            // Calcule o valor final com o bônus
-            baseDamage = (int)(baseDamage * (1.0 + percentagemBonus));
-
-            if (baseDamage < 0) baseDamage = 0;
-
-            critBonusMultiplier = 0.00;
-            double critChance = client.Tamer.Partner.CC / 100;
-
-
-            blocked = targetMob.BLValue >= UtilitiesFunctions.RandomDouble();
-
-
-            baseDamage /= blocked ? 2 : 1;
-
-            if (critChance >= UtilitiesFunctions.RandomDouble() && client.Partner.CD > 0)
-            {
-                blocked = false;
-                return GetCurrentDamage(client, targetMob);
-            }
-
-            return baseDamage;
-
-        }
-        private static int CalculateFinalDamage(GameClient client, SummonMobModel targetMob, out double critBonusMultiplier, out bool blocked)
-        {
-            var multiplier = 1;
-
-            if (client.Tamer.Partner.BaseInfo.Attribute.
-                HasAttributeAdvantage(targetMob.Attribute)
-                || client.Tamer.Partner.BaseInfo.Element
-                .HasElementAdvantage(targetMob.Element))
-                multiplier = 2;
-
-            var baseDamage = client.Tamer.Partner.AT * multiplier;
-
-            var random = new Random();
-            // Gere um valor aleatório entre 0% e 5% a mais do valor original
-            double percentagemBonus = random.NextDouble() * 0.05;
-
-            // Calcule o valor final com o bônus
-            baseDamage = (int)(baseDamage * (1.0 + percentagemBonus));
-
-            if (baseDamage < 0) baseDamage = 0;
-
-            critBonusMultiplier = 0.00;
-            double critChance = client.Tamer.Partner.CC / 100;
-
-
-            blocked = targetMob.BLValue >= UtilitiesFunctions.RandomDouble();
-
-
-            baseDamage /= blocked ? 2 : 1;
-
-            if (critChance >= UtilitiesFunctions.RandomDouble() && client.Partner.CD > 0)
-            {
-                blocked = false;
-                return GetCurrentDamage(client, targetMob);
-            }
-
-            return baseDamage;
-
-        }
 
         private static int CalculateFinalDamage(GameClient client, DigimonModel? targetPartner, out double critBonusMultiplier, out bool blocked)
         {
@@ -1052,99 +975,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 (baseDamage * elementMultiplier));
         }
 
-        public static int GetCurrentDamage(GameClient client, MobConfigModel? targetMob)
-        {
-            var ResultAT = client.Tamer.Partner.AT;
 
-            var ResultDamage = 0;
-            var ResultCriticalDamage = 0;
-            var ResultCriticalDamageDoubleAdvantage = 0;
-            double criticalDamageValue = client.Tamer.Partner.CD;
-            var ResultDamageDoubleAdvantage = 0;
-            double MultiplierAttribute = 0;
-
-            var attributeVantage = client.Tamer.Partner.BaseInfo.Attribute.
-                HasAttributeAdvantage(client.Tamer.TargetMob.Attribute);
-            var elementVantage = client.Tamer.Partner.BaseInfo.Element
-                .HasElementAdvantage(client.Tamer.TargetMob.Element);
-
-
-            ResultDamage = ResultAT + (int)Math.Floor((double)0);
-            double addedCriticalDamage = ResultDamage * 0.8;
-            addedCriticalDamage *= (1 + ((criticalDamageValue + 0) / 100.0));
-            ResultCriticalDamage = ResultDamage + (int)Math.Floor(addedCriticalDamage);
-
-            if (client.Tamer.Partner.AttributeExperience.CurrentAttributeExperience && attributeVantage)
-            {
-
-                MultiplierAttribute = (2 + ((client.Tamer.Partner.ATT) / 200.0));
-
-                ResultDamageDoubleAdvantage = (int)Math.Floor(0 + (MultiplierAttribute * ResultAT));
-
-            }
-            else if (client.Tamer.Partner.AttributeExperience.CurrentElementExperience && elementVantage)
-            {
-                MultiplierAttribute = 2;
-                ResultDamageDoubleAdvantage = (int)Math.Floor(0 + (MultiplierAttribute * ResultAT));
-            }
-
-            double FinalValue = ResultCriticalDamage + ResultDamageDoubleAdvantage;
-
-            Random random = new Random();
-
-            // Gere um valor aleatório entre 0% e 5% a mais do valor original
-            double percentagemBonus = random.NextDouble() * 0.05;
-
-            // Calcule o valor final com o bônus
-            return (int)(FinalValue * (1.0 + percentagemBonus));
-
-        }
-        public static int GetCurrentDamage(GameClient client, SummonMobModel? targetMob)
-        {
-            var ResultAT = client.Tamer.Partner.AT;
-
-            var ResultDamage = 0;
-            var ResultCriticalDamage = 0;
-            var ResultCriticalDamageDoubleAdvantage = 0;
-            double criticalDamageValue = client.Tamer.Partner.CD;
-            var ResultDamageDoubleAdvantage = 0;
-            double MultiplierAttribute = 0;
-
-            var attributeVantage = client.Tamer.Partner.BaseInfo.Attribute.
-                HasAttributeAdvantage(client.Tamer.TargetMob.Attribute);
-            var elementVantage = client.Tamer.Partner.BaseInfo.Element
-                .HasElementAdvantage(client.Tamer.TargetMob.Element);
-
-
-            ResultDamage = ResultAT + (int)Math.Floor((double)0);
-            double addedCriticalDamage = ResultDamage * 0.8;
-            addedCriticalDamage *= (1 + ((criticalDamageValue + 0) / 100.0));
-            ResultCriticalDamage = ResultDamage + (int)Math.Floor(addedCriticalDamage);
-
-            if (client.Tamer.Partner.AttributeExperience.CurrentAttributeExperience && attributeVantage)
-            {
-
-                MultiplierAttribute = (2 + ((client.Tamer.Partner.ATT) / 200.0));
-
-                ResultDamageDoubleAdvantage = (int)Math.Floor(0 + (MultiplierAttribute * ResultAT));
-
-            }
-            else if (client.Tamer.Partner.AttributeExperience.CurrentElementExperience && elementVantage)
-            {
-                MultiplierAttribute = 2;
-                ResultDamageDoubleAdvantage = (int)Math.Floor(0 + (MultiplierAttribute * ResultAT));
-            }
-
-            double FinalValue = ResultCriticalDamage + ResultDamageDoubleAdvantage;
-
-            Random random = new Random();
-
-            // Gere um valor aleatório entre 0% e 5% a mais do valor original
-            double percentagemBonus = random.NextDouble() * 0.05;
-
-            // Calcule o valor final com o bônus
-            return (int)(FinalValue * (1.0 + percentagemBonus));
-
-        }
     }
 }
