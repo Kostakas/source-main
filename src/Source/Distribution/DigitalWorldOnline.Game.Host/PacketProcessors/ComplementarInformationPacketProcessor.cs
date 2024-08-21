@@ -216,6 +216,8 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             _logger.Information($"Complementar information packets sent for character {client.TamerId}.");
             _logger.Debug($"Updating tamer state for character {client.TamerId}...");
+
+            client.Tamer.UpdateSlots();
             client.Tamer.UpdateState(CharacterStateEnum.Ready);
             await _sender.Send(new UpdateCharacterStateCommand(client.TamerId, CharacterStateEnum.Ready));
 

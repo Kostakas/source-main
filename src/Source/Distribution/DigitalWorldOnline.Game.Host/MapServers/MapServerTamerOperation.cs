@@ -614,7 +614,7 @@ namespace DigitalWorldOnline.GameHost
             return sb.ToString();
         }
 
-        private void CheckEvolution(GameClient client)
+        private async void CheckEvolution(GameClient client)
         {
             var partner = client.Tamer.Partner;
             var evolutionType = _assets.DigimonBaseInfo
@@ -623,8 +623,10 @@ namespace DigitalWorldOnline.GameHost
 
             // Check if the evolution type is neither Rookie nor Capsule
             if ((EvolutionRankEnum)evolutionType != EvolutionRankEnum.Rookie &&
-                (EvolutionRankEnum)evolutionType != EvolutionRankEnum.Capsule)
+                (EvolutionRankEnum)evolutionType != EvolutionRankEnum.Capsule &&
+                (EvolutionRankEnum)evolutionType != EvolutionRankEnum.Champion)
             {
+                await Task.Delay(4000);
                 // Activate special map condition only if not Rookie or Capsule
                 client.Tamer.IsSpecialMapActive = client.Tamer.Location.MapId == 1109;
 
@@ -632,10 +634,6 @@ namespace DigitalWorldOnline.GameHost
                 if (client.Tamer.BreakEvolution)
                 {
                     client.Send(new SystemMessagePacket("You can't digivolve in this Area"));
-                }
-                else
-                {
-                    client.Tamer.ActiveEvolution.SetDs(int.MaxValue);
                 }
             }
             else

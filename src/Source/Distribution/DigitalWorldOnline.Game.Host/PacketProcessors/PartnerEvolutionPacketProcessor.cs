@@ -208,7 +208,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     case EvolutionRankEnum.Champion:
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
-                            if (!levelCheck || client.Tamer.DS < 100)
+                            if (!levelCheck || client.Tamer.CurrentDs < 100)
                             { 
                                 client.Send(new DigimonEvolutionFailPacket());
                                 client.Send(new SystemMessagePacket($"Not enough level or Tamer Ds to digivolve"));
@@ -224,7 +224,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
 
-                            if (!levelCheck2 || client.Tamer.DS < 350)
+                            if (!levelCheck2 || client.Tamer.CurrentDs < 350)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
                                 client.Send(new SystemMessagePacket($"Not enough level or Tamer Ds to digivolve"));
@@ -239,13 +239,13 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                         {
                             evoEffect = DigimonEvolutionEffectEnum.Default;
 
-                            if (!levelCheck3 || client.Tamer.DS < 700)
+                            if (!levelCheck3 || client.Tamer.CurrentDs < 700)
                             {
                                 client.Send(new DigimonEvolutionFailPacket());
                                 client.Send(new SystemMessagePacket($"Not enough level or Tamer Ds to digivolve"));
                                 return;
                             }
-                            client.Tamer.ConsumeDs(700);
+                            client.Tamer.ConsumeDs( 700);
                             client.Tamer.ActiveEvolution.SetDs(12);
                         }
                         break;
@@ -258,7 +258,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                             if (accelerator == null)
                                 accelerator = client.Tamer.Inventory.FindItemById(41002);
-                            if (client.Tamer.DS < 600 || !levelCheck4 || !client.Tamer.Inventory.RemoveOrReduceItem(accelerator,3))
+                            if (client.Tamer.CurrentDs < 600 || !levelCheck4 || !client.Tamer.Inventory.RemoveOrReduceItem(accelerator,3))
                             {
                                 // Either the level requirement wasn't met, or the item couldn't be consumed.
                                 client.Send(new DigimonEvolutionFailPacket());
@@ -282,7 +282,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                 var accelerator = client.Tamer.Inventory.FindItemById(evoInfo.RequiredItem);
 
                                 if (!levelCheck6
-                                    || !client.Tamer.Inventory.RemoveOrReduceItem(accelerator,1) || client.Tamer.DS < 1000)
+                                    || !client.Tamer.Inventory.RemoveOrReduceItem(accelerator,1) || client.Tamer.CurrentDs < 1000)
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
                                     client.Send(new SystemMessagePacket($"Not enough level or Tamer Ds to digivolve"));
@@ -291,7 +291,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             }
                             else
                             {
-                                if (!levelCheck6 || client.Tamer.DS < 1000)
+                                if (!levelCheck6 || client.Tamer.CurrentDs < 1000)
                                 {
                                     client.Send(new DigimonEvolutionFailPacket());
                                     client.Send(new SystemMessagePacket($"Not enough level or Tamer Ds to digivolve"));

@@ -428,8 +428,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
                 {
                     // Default behavior when special conditions are not active
                     return (ActiveEvolution.DsPerSecond > 0 && CurrentDs == 0) ||
-                           (ActiveEvolution.XgPerSecond > 0 && XGauge == 0) ||
-                           (CurrentDs == 0); // Adjust default behavior as needed
+                           (ActiveEvolution.XgPerSecond > 0 && XGauge == 0);
                 }
             }
         }

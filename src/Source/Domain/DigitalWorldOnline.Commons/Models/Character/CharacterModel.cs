@@ -314,7 +314,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
             LastAfkNotification = DateTime.Now;
         }
 
-        public void RemoveDigimon(byte slot, bool updateSlots = true)
+        public void RemoveDigimon(byte slot,bool updateSlots = true)
         {
             Digimons.RemoveAll(x => x.Slot == slot);
 
@@ -324,9 +324,18 @@ namespace DigitalWorldOnline.Commons.Models.Character
                 Digimons.OrderByDescending(x => x.Slot).ToList().ForEach(digimon =>
                 {
                     count--;
-                    digimon.SetSlot((byte)count);
+                    //digimon.SetSlot((byte)count);
                 });
             }
+        }
+        public void UpdateSlots()
+        {
+            var count = Digimons.Count;
+            Digimons.OrderByDescending(x => x.Slot).ToList().ForEach(digimon =>
+            {
+                count--;
+                digimon.SetSlot((byte)count);
+            });
         }
 
         public void SetGenericHandler(ushort generalHandler)
