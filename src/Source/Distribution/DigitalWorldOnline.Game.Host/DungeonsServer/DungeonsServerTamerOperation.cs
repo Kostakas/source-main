@@ -805,10 +805,11 @@ namespace DigitalWorldOnline.GameHost
                 tamer.Partner.UpdateLastHitTime();
             }
 
-            //bool StopAttack = tamer.TargetSummonMob == null || !tamer.TargetSummonMob.Alive;
+            bool StopAttack = tamer.TargetSummonMob == null || !tamer.TargetSummonMob.Alive;
+            bool StopAttack2 = tamer.TargetMob == null || !tamer.TargetMob.Alive;
 
-            //if (tamer.TargetMob == null || !tamer.TargetMob.Alive && StopAttack)
-            //    tamer.Partner?.StopAutoAttack();
+            if ( StopAttack && StopAttack2)
+                tamer.Partner?.StopAutoAttack();
 
 
         }

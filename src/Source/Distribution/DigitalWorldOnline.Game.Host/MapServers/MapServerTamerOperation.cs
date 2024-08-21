@@ -44,16 +44,16 @@ namespace DigitalWorldOnline.GameHost
                 if (client == null || !client.IsConnected || client.Partner == null)
                     continue;
 
-
                 GetInViewMobs(map, tamer);
                 GetInViewMobs(map, tamer, true);
 
                 ShowOrHideTamer(map, tamer);
                 ShowOrHideConsignedShop(map, tamer);
-
                 PartnerAutoAttack(tamer, client);
 
                 CheckMonthlyReward(client);
+
+                CheckEvolution(client);
 
                 tamer.AutoRegen();
                 tamer.ActiveEvolutionReduction();
@@ -614,6 +614,40 @@ namespace DigitalWorldOnline.GameHost
             return sb.ToString();
         }
 
+        private void CheckEvolution(GameClient client)
+        {
+            var partner = client.Tamer.Partner;
+            var evolutionType = _assets.DigimonBaseInfo
+                .First(x => x.Type == partner.CurrentType)
+                .EvolutionType;
+
+            // Check if the evolution type is neither Rookie nor Capsule
+            if ((EvolutionRankEnum)evolutionType != EvolutionRankEnum.Rookie &&
+                (EvolutionRankEnum)evolutionType != EvolutionRankEnum.Capsule)
+            {
+                // Activate special map condition only if not Rookie or Capsule
+                client.Tamer.IsSpecialMapActive = client.Tamer.Location.MapId == 1109;
+
+                // Determine if evolution should be broken
+                if (client.Tamer.BreakEvolution)
+                {
+                    client.Send(new SystemMessagePacket("You can't digivolve in this Area"));
+                }
+                else
+                {
+                    client.Tamer.ActiveEvolution.SetDs(int.MaxValue);
+                }
+            }
+            else
+            {
+                client.Tamer.IsSpecialMapActive = false;
+            }
+        }
+
+
+
+
+
         private void PartnerAutoAttack(CharacterModel tamer, GameClient client)
         {
             if (!tamer.Partner.AutoAttack)
@@ -1117,5 +1151,6 @@ namespace DigitalWorldOnline.GameHost
 
 
         }
+
     }
 }

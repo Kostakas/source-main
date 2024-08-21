@@ -408,11 +408,32 @@ namespace DigitalWorldOnline.Commons.Models.Character
         public bool CheckBuffsTime => DateTime.Now >= LastBuffsCheck;
         public bool CheckExpiredItemsTime => DateTime.Now >= LastExpiredItemsCheck;
         public bool HaveActiveCashSkill => ActiveSkill.FirstOrDefault(x => x.Type == TamerSkillTypeEnum.Cash || x.SkillId > 0) != null;
+
+        public bool IsSpecialMapActive { get; set; }
+
         /// <summary>
         /// Returns true if the active evolution has broken.
         /// </summary>
-        public bool BreakEvolution => (ActiveEvolution.DsPerSecond > 0 && CurrentDs == 0) ||
-            (ActiveEvolution.XgPerSecond > 0 && XGauge == 0);
+        public bool BreakEvolution
+        {
+            get
+            {
+                // Check if special map conditions and evolution rank are neither Rookie nor Capsule
+                if (IsSpecialMapActive)
+                {
+                    // Return true if any of the specific conditions are met
+                    return true;
+                }
+                else
+                {
+                    // Default behavior when special conditions are not active
+                    return (ActiveEvolution.DsPerSecond > 0 && CurrentDs == 0) ||
+                           (ActiveEvolution.XgPerSecond > 0 && XGauge == 0) ||
+                           (CurrentDs == 0); // Adjust default behavior as needed
+                }
+            }
+        }
+
 
         /// <summary>
         /// Informs if the tamer has an equipped XAI.
