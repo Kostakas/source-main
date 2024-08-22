@@ -16,7 +16,7 @@ using Serilog;
 
 namespace DigitalWorldOnline.Game.PacketProcessors
 {
-    public class HatchFinishPacketProcessor : IGamePacketProcessor
+    public class HatchFinishPacketProcessor :IGamePacketProcessor
     {
         public GameServerPacketEnum Type => GameServerPacketEnum.HatchFinish;
 
@@ -44,7 +44,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             _dungeonServer = dungeonsServer;
         }
 
-        public async Task Process(GameClient client, byte[] packetData)
+        public async Task Process(GameClient client,byte[] packetData)
         {
             var packet = new GamePacketReader(packetData);
 
@@ -59,13 +59,13 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 return;
             }
 
-            byte i = 0;
-            while (i < client.Tamer.DigimonSlots)
+            // Find an empty slot
+            var slotIndex = FindEmptySlot(client);
+            if (slotIndex == -1 || slotIndex > byte.MaxValue)
             {
-                if (client.Tamer.Digimons.FirstOrDefault(x => x.Slot == i) == null)
-                    break;
-
-                i++;
+                _logger.Warning("No valid empty slot available for new Digimon.");
+                client.Send(new SystemMessagePacket("No valid empty slot available for the new Digimon."));
+                return;
             }
 
             var newDigimon = DigimonModel.Create(
@@ -74,7 +74,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 hatchInfo.HatchType,
                 (DigimonHatchGradeEnum)client.Tamer.Incubator.HatchLevel,
                 client.Tamer.Incubator.GetLevelSize(),
-                i
+                (byte)slotIndex // Cast to byte
             );
 
             newDigimon.NewLocation(
@@ -84,17 +84,11 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             );
 
             newDigimon.SetBaseInfo(
-                _statusManager.GetDigimonBaseInfo(
-                    newDigimon.BaseType
-                )
+                _statusManager.GetDigimonBaseInfo(newDigimon.BaseType)
             );
 
             newDigimon.SetBaseStatus(
-                _statusManager.GetDigimonBaseStatus(
-                    newDigimon.BaseType,
-                    newDigimon.Level,
-                    newDigimon.Size
-                )
+                _statusManager.GetDigimonBaseStatus(newDigimon.BaseType,newDigimon.Level,newDigimon.Size)
             );
 
             newDigimon.AddEvolutions(
@@ -112,12 +106,13 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             client.Tamer.AddDigimon(newDigimon);
 
-            client.Send(new HatchFinishPacket(newDigimon, (ushort)(client.Partner.GeneralHandler + 1000), client.Tamer.Digimons.FindIndex(x => x == newDigimon)));
+            client.Send(new HatchFinishPacket(newDigimon,(ushort)(client.Partner.GeneralHandler + 1000),(byte)slotIndex));
 
-            if (client.Tamer.Incubator.PerfectSize(newDigimon.HatchGrade, newDigimon.Size))
+            if (client.Tamer.Incubator.PerfectSize(newDigimon.HatchGrade,newDigimon.Size))
             {
-                _mapServer.BroadcastGlobal(new NeonMessagePacket(NeonMessageTypeEnum.Scale, client.Tamer.Name, newDigimon.BaseType, newDigimon.Size).Serialize());
-                _dungeonServer.BroadcastGlobal(new NeonMessagePacket(NeonMessageTypeEnum.Scale, client.Tamer.Name, newDigimon.BaseType, newDigimon.Size).Serialize());
+                var neonMessagePacket = new NeonMessagePacket(NeonMessageTypeEnum.Scale,client.Tamer.Name,newDigimon.BaseType,newDigimon.Size).Serialize();
+                _mapServer.BroadcastGlobal(neonMessagePacket);
+                _dungeonServer.BroadcastGlobal(neonMessagePacket);
             }
 
             var digimonInfo = await _sender.Send(new CreateDigimonCommand(newDigimon));
@@ -130,21 +125,17 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 foreach (var digimon in newDigimon.Evolutions)
                 {
                     slot++;
-
                     var evolution = digimonInfo.Evolutions[slot];
 
                     if (evolution != null)
                     {
                         digimon.SetId(evolution.Id);
-
                         var skillSlot = -1;
 
                         foreach (var skill in digimon.Skills)
                         {
                             skillSlot++;
-
                             var dtoSkill = evolution.Skills[skillSlot];
-
                             skill.SetId(dtoSkill.Id);
                         }
                     }
@@ -156,6 +147,18 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             client.Tamer.Incubator.RemoveEgg();
 
             await _sender.Send(new UpdateIncubatorCommand(client.Tamer.Incubator));
+        }
+
+        private byte FindEmptySlot(GameClient client)
+        {
+            for (byte i = 0;i < client.Tamer.DigimonSlots;i++)
+            {
+                if (client.Tamer.Digimons.FirstOrDefault(x => x.Slot == i) == null)
+                {
+                    return i;
+                }
+            }
+            return byte.MaxValue; // No empty slot found
         }
     }
 }
