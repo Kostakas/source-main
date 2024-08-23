@@ -516,7 +516,7 @@ namespace DigitalWorldOnline.Commons.Models.Character
             Level = 1;
             CurrentHp = 40;
             CurrentDs = 40;
-            Size = 15000; //TODO: externalizar
+            Size = 25000; //TODO: externalizar
             
 
             State = CharacterStateEnum.Disconnected;
