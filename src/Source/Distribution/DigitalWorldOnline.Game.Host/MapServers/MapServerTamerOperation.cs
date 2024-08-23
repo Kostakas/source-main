@@ -48,7 +48,9 @@ namespace DigitalWorldOnline.GameHost
                 GetInViewMobs(map, tamer, true);
 
                 ShowOrHideTamer(map, tamer);
+
                 ShowOrHideConsignedShop(map, tamer);
+
                 PartnerAutoAttack(tamer, client);
 
                 CheckMonthlyReward(client);
