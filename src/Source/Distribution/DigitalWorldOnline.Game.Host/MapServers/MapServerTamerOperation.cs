@@ -775,7 +775,7 @@ namespace DigitalWorldOnline.GameHost
                     #region Hit Damage
                     var critBonusMultiplier = 0.00;
                     var blocked = false;
-                    var finalDmg = tamer.GodMode ? tamer.TargetSummonMob.CurrentHP : CalculateDamage (tamer, client, out critBonusMultiplier, out blocked, _configuration);
+                    var finalDmg = tamer.GodMode ? tamer.TargetSummonMob.CurrentHP : CalculateDamageSummon (tamer, client, out critBonusMultiplier, out blocked, _configuration);
                     #endregion
 
                     if (finalDmg <= 0) finalDmg = 1;
@@ -828,8 +828,9 @@ namespace DigitalWorldOnline.GameHost
             }
 
             bool StopAttack = tamer.TargetSummonMob == null || !tamer.TargetSummonMob.Alive;
+            bool StopAttack2 = tamer.TargetMob == null || !tamer.TargetMob.Alive;
 
-            if (tamer.TargetMob == null || !tamer.TargetMob.Alive && StopAttack)
+            if (StopAttack && StopAttack2)
                 tamer.Partner?.StopAutoAttack();
 
 
@@ -1100,6 +1101,154 @@ namespace DigitalWorldOnline.GameHost
                 BroadcastForUniqueTamer(client.TamerId, new ChatMessagePacket(message, ChatTypeEnum.Shout, client.Tamer.Partner.Name).Serialize());
             }
             return (int)totalDamage ;
+        }
+
+        private static double GetAttributeDamageSummon(CharacterModel tamer,IConfiguration configuration)
+        {
+            double multiplier = 0;
+            double partnerAT = tamer.Partner.AT;
+            var gameConfig = new GameConfigurationModel();
+            configuration.GetSection("GameConfigs").Bind(gameConfig);
+
+
+            // Check if the tamer's partner has an attribute advantage over the target mob
+            if (tamer.Partner.BaseInfo.Attribute.HasAttributeAdvantage(tamer.TargetSummonMob.Attribute))
+            {
+                double currentExperience = tamer.Partner.GetAttributeExperience();
+                const double maxExperience = 10000;
+
+                // Calculate the bonus multiplier based on experience, ensuring it does not exceed 0.5
+                double bonusMultiplier = currentExperience / maxExperience;
+                multiplier += Math.Min(bonusMultiplier,Double.Parse(configuration["GameConfigs:Attribute:AdvantageMultiplier"] ?? "0.1"));
+            }
+            // Check if the target mob has an attribute advantage over the tamer's partner
+            else if (tamer.TargetSummonMob.Attribute.HasAttributeAdvantage(tamer.Partner.BaseInfo.Attribute))
+            {
+                multiplier = Double.Parse(configuration["GameConfigs:Attribute:DisAdvantageMultiplier"] ?? "0.1");
+            }
+
+            double attributeDamage = partnerAT * multiplier;
+            return attributeDamage;
+        }
+
+
+
+        private static double GetElementDamageSummon(CharacterModel tamer,IConfiguration configuration)
+        {
+            double multiplier = 0;
+            double partnerAT = tamer.Partner.AT;
+            var gameConfig = new GameConfigurationModel();
+            configuration.GetSection("GameConfigs").Bind(gameConfig);
+
+            // Check if the tamer's partner has an element advantage over the target mob
+            if (tamer.Partner.BaseInfo.Element.HasElementAdvantage(tamer.TargetSummonMob.Element))
+            {
+                double currentExperience = tamer.Partner.GetElementExperience();
+                const double maxExperience = 10000;
+
+                // Calculate the bonus multiplier based on experience, ensuring it does not exceed 0.5
+                double bonusMultiplier = currentExperience / maxExperience;
+                multiplier += Math.Min(bonusMultiplier,Double.Parse(configuration["GameConfigs:Element:AdvantageMultiplier"] ?? "0.1"));
+            }
+            // Check if the target mob has an element advantage over the tamer's partner
+            else if (tamer.TargetSummonMob.Element.HasElementAdvantage(tamer.Partner.BaseInfo.Element))
+            {
+                multiplier = Double.Parse(configuration["GameConfigs:Element:DisAdvantageMultiplier"] ?? "0.1");
+            }
+
+            double elementDamage = partnerAT * multiplier;
+            return elementDamage;
+        }
+        //critBonusMultiplier = 0;
+        //    blocked = false; maybe for later??
+        public int CalculateDamageSummon(CharacterModel tamer,GameClient client,out double critBonusMultiplier,out bool blocked,IConfiguration configuration = null)
+        {
+            double baseDamage = tamer.Partner.AT;
+
+            var random = new Random();
+            // Generate a random bonus between 0% and 5% of the original value
+            double percentageBonus = random.NextDouble() * 0.05;
+            // Calculate the final base damage with the random bonus
+            baseDamage *= (1.0 + percentageBonus);
+
+            // Ensure baseDamage is non-negative
+            if (baseDamage < 0) baseDamage = 0;
+
+            // Level-based bonus damage calculation
+            double levelBonusMultiplier = tamer.Partner.Level > tamer.TargetSummonMob.Level ? (0.01 * (tamer.Partner.Level - tamer.TargetSummonMob.Level)) : 0;
+            int levelBonusDamage = (int)(baseDamage * levelBonusMultiplier);
+            double enemyDefence = ((client.Tamer.TargetSummonMob.DEValue / 2) + (tamer.TargetSummonMob.Level * 20));
+
+            // Attribute and element damage calculations
+            double attributeDamage = GetAttributeDamageSummon(tamer,configuration);
+            double elementDamage = GetElementDamageSummon(tamer,configuration);
+
+            // Determine if the attack is blocked
+            blocked = tamer.TargetSummonMob.BLValue >= UtilitiesFunctions.RandomDouble();
+            if (blocked)
+            {
+                baseDamage /= 2;
+            }
+
+            // Check for a critical hit
+            double critChance = tamer.Partner.CC / 100.0;
+            bool isCriticalHit = critChance >= UtilitiesFunctions.RandomDouble() && tamer.Partner.CD > 0;
+            if (isCriticalHit)
+            {
+                blocked = false;  // Critical hits can't be blocked
+                critBonusMultiplier = 1.0;
+                double criticalDamage = baseDamage * (1.0 + tamer.Partner.CD / 100.0);
+                baseDamage = criticalDamage;  // Apply critical damage as the new base damage
+            }
+            else
+            {
+                critBonusMultiplier = 0;
+            }
+
+            double totalDamage = baseDamage + attributeDamage + elementDamage + levelBonusDamage - enemyDefence;
+
+            // Broadcast attribute damage message if applicable
+            if (attributeDamage < 0)
+            {
+                string attributeMessage = $"{Math.Floor(attributeDamage)} Attribute DMG!";
+                BroadcastForUniqueTamer(client.TamerId,new GuildMessagePacket(client.Tamer.Partner.Name,attributeMessage).Serialize());
+            }
+            else if (attributeDamage > 0)
+            {
+                string attributeMessage = $"+{Math.Floor(attributeDamage)} Attribute DMG!";
+                BroadcastForUniqueTamer(client.TamerId,new GuildMessagePacket(client.Tamer.Partner.Name,attributeMessage).Serialize());
+            }
+
+            // Broadcast element damage message if applicable
+            if (elementDamage < 0)
+            {
+                string elementMessage = $"{Math.Floor(elementDamage)} Element DMG!";
+                string receiverName = client.Tamer.Partner.Name;
+                client.Send(new ChatMessagePacket(elementMessage,ChatTypeEnum.Whisper,WhisperResultEnum.Success,client.Tamer.Partner.Name,receiverName));
+            }
+            else if (elementDamage > 0)
+            {
+                string elementMessage = $"+{Math.Floor(elementDamage)} Element DMG!";
+                string receiverName = client.Tamer.Partner.Name;
+                client.Send(new ChatMessagePacket(elementMessage,ChatTypeEnum.Whisper,WhisperResultEnum.Success,client.Tamer.Partner.Name,receiverName));
+            }
+
+
+            // Broadcast total damage message if applicable
+            if (totalDamage < 0)
+            {
+                string message = $"Enemy Digimon's defence is way too high";
+                BroadcastForUniqueTamer(client.TamerId,new ChatMessagePacket(message,ChatTypeEnum.Shout,client.Tamer.Partner.Name).Serialize());
+            }
+            else if (totalDamage > 0)
+            {
+                string message = isCriticalHit
+                    ? $"{Math.Floor(totalDamage)} Crit DMG @{enemyDefence} enemy DE"
+                    : $"{Math.Floor(totalDamage)} DMG @{enemyDefence} enemy DE";
+
+                BroadcastForUniqueTamer(client.TamerId,new ChatMessagePacket(message,ChatTypeEnum.Shout,client.Tamer.Partner.Name).Serialize());
+            }
+            return (int)totalDamage;
         }
 
 

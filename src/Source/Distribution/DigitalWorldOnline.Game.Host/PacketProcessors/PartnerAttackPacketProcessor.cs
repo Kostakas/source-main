@@ -569,7 +569,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             #region Hit Damage
                             var critBonusMultiplier = 0.00;
                             var blocked = false;
-                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _dungeonServer.CalculateDamageSummon(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
+                            var finalDmg = client.Tamer.GodMode ? targetMob.CurrentHP : _mapServer.CalculateDamageSummon(client.Tamer, client, out critBonusMultiplier, out blocked, _Configuration);
 
                             if (finalDmg != 0 && !client.Tamer.GodMode)
                             {
