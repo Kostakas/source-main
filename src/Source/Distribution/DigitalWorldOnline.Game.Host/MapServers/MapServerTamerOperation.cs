@@ -50,7 +50,8 @@ namespace DigitalWorldOnline.GameHost
                 ShowOrHideTamer(map, tamer);
 
                 ShowOrHideConsignedShop(map, tamer);
-
+                var packet = new UpdateStatusPacket(client.Tamer);
+                client.Send(packet);
                 PartnerAutoAttack(tamer, client);
 
                 CheckMonthlyReward(client);
