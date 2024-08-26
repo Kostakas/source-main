@@ -283,7 +283,7 @@ namespace DigitalWorldOnline.GameHost
 
                     await Task.WhenAll(tasks);
 
-                    await Task.Delay(500, cancellationToken);
+                    await Task.Delay(100, cancellationToken);
                 }
                 catch (Exception ex)
                 {

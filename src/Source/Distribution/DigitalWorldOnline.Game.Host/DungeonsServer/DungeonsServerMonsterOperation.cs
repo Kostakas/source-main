@@ -1356,7 +1356,7 @@ namespace DigitalWorldOnline.GameHost
                         }
                         else
                         {
-                            //map.AttackNearbyTamer(mob, mob.TamersViewing);
+                            map.AttackNearbyTamer(mob, mob.TamersViewing,_assets.NpcColiseum);
                         }
                     }
                     break;

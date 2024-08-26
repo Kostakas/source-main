@@ -596,14 +596,48 @@ namespace DigitalWorldOnline.Commons.Models.Map
                         mob.StartBattle(targetClient.Tamer);
                         targetClient.Tamer.StartBattle(mob);
 
-                        if (!targetClient.Tamer.GodMode)
-                            AttackTarget(mob, npcAsset);
+                        //if (!targetClient.Tamer.GodMode)
+                        //    AttackTarget(mob, npcAsset);
 
                         break;
                     }
                 }
             }
         }
+
+        public void AttackNearbyTamer(SummonMobModel mob,List<long> nearbyTamers,List<NpcColiseumAssetModel> npcAsset)
+        {
+            if (mob.ReactionType == DigimonReactionTypeEnum.Agressive && !mob.Dead && !mob.InBattle && DateTime.Now > mob.AgressiveCheckTime && nearbyTamers.Any())
+            {
+                foreach (var tamerId in nearbyTamers)
+                {
+                    var targetClient = Clients.FirstOrDefault(x => x.TamerId == tamerId);
+                    if (targetClient == null || targetClient.Tamer.Hidden || targetClient.Tamer.Dead || targetClient.Tamer.Riding)
+                        continue;
+
+                    var diff = UtilitiesFunctions.CalculateDistance(targetClient.Tamer.Partner.Location.X,
+                        mob.CurrentLocation.X,
+                        targetClient.Tamer.Partner.Location.Y,
+                        mob.CurrentLocation.Y);
+
+                    if (diff <= mob.ViewRange)
+                    {
+                        BroadcastForTargetTamers(mob.TamersViewing,new MobTinklePacket(mob.GeneralHandler).Serialize());
+                        BroadcastForTargetTamers(mob.TamersViewing,new SetCombatOnPacket(mob.GeneralHandler).Serialize());
+                        BroadcastForTargetTamers(mob.TamersViewing,new SetCombatOnPacket(targetClient.Partner.GeneralHandler).Serialize());
+
+                        mob.StartBattle(targetClient.Tamer);
+                        targetClient.Tamer.StartBattle(mob);
+
+                        //if (!targetClient.Tamer.GodMode)
+                        //    AttackTarget(mob);
+
+                        break;
+                    }
+                }
+            }
+        }
+
 
         #region Handler
         private bool NeedNewHandler(MobConfigModel mob)
