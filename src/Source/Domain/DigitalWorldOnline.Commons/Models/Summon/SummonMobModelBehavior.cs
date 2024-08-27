@@ -39,7 +39,7 @@ namespace DigitalWorldOnline.Commons.Models.Summon
                     // Calculates and returns the difference in minutes between the expiration date and the current time
                     TimeSpan timeRemaining = ExpirationDate - DateTime.Now;
 
-                    return (int)timeRemaining.TotalMinutes;
+                    return (int)timeRemaining.TotalSeconds;
                 }
                 else
                 {
