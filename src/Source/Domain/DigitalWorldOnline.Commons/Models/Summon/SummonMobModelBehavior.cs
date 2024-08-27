@@ -33,21 +33,22 @@ namespace DigitalWorldOnline.Commons.Models.Summon
         {
             get
             {
-                // Verifica se a ExpirationDate é maior que a data e hora atual
+                // Checks if the ExpirationDate is greater than the current date and time
                 if (ExpirationDate > DateTime.Now)
                 {
-                    // Calcula e retorna a diferença em minutos entre a data de expiração e o momento atual
+                    // Calculates and returns the difference in minutes between the expiration date and the current time
                     TimeSpan timeRemaining = ExpirationDate - DateTime.Now;
 
-                    return (int)timeRemaining.TotalSeconds;
+                    return (int)timeRemaining.TotalMinutes;
                 }
                 else
                 {
-                    // Se a data de expiração já passou, retorna 0 minutos restantes
+                    // If the expiration date has already passed, returns 0 minutes remaining
                     return 0;
                 }
             }
         }
+
 
         public bool CanMissHit()
         {

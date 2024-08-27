@@ -36,8 +36,8 @@ namespace DigitalWorldOnline.Commons.Models.Summon
 
         public SummonMobDropRewardModel()
         {
-            MinAmount = 0;
-            MaxAmount = 1;
+            MinAmount = 1;
+            MaxAmount = 3;
             Drops = new List<SummonMobItemDropModel>();
             BitsDrop = new SummonMobBitDropModel();
         }

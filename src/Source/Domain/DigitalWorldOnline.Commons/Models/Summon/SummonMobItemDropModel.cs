@@ -37,15 +37,15 @@ namespace DigitalWorldOnline.Commons.Models.Summon
 
         public SummonMobItemDropModel()
         {
-            MinAmount = 1;
-            MaxAmount = 1;
+            MinAmount = 2;
+            MaxAmount = 5;
         }
 
         public SummonMobItemDropModel(long lastId)
         {
             Id = lastId + 1;
-            MinAmount = 1;
-            MaxAmount = 1;
+            MinAmount = 2;
+            MaxAmount = 5;
         }
     }
 }

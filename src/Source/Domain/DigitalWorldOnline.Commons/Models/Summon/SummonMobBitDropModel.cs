@@ -25,9 +25,9 @@ namespace DigitalWorldOnline.Commons.Models.Summon
 
         public SummonMobBitDropModel()
         {
-            MinAmount = 0;
-            MaxAmount = 150;
-            Chance = 87.5;
+            MinAmount = 1000;
+            MaxAmount = 2000;
+            Chance = 100;
         }
     }
 }
