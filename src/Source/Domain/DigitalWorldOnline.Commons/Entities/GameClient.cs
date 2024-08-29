@@ -140,6 +140,14 @@ namespace DigitalWorldOnline.Commons.Entities
                 Silk += silk;
         }
 
+        public void RemoveSilk(int silk)
+        {
+            if (Silk - silk > int.MaxValue)
+                Silk = int.MaxValue;
+            else
+                Silk -= silk;
+        }
+
         public void SetServerExperience(int experience) => ServerExperience = experience;
 
         public void SetAccessLevel(AccountAccessLevelEnum accessLevel)
@@ -165,20 +173,31 @@ namespace DigitalWorldOnline.Commons.Entities
 
         public void IncreaseMembershipDuration(int seconds)
         {
-            if (MembershipExpirationDate == null)
+            int maxDurationInSeconds = 365 * 24 * 60 * 60; // 1 year
+
+            DateTime newExpirationDate;
+
+            if (MembershipExpirationDate == null || MembershipExpirationDate < DateTime.Now)
             {
-                MembershipExpirationDate = DateTime.Now.AddSeconds(seconds);
+                newExpirationDate = DateTime.Now.AddSeconds(seconds);
             }
             else
             {
-                if (MembershipExpirationDate < DateTime.Now)
-                {
-                    MembershipExpirationDate = DateTime.Now.AddSeconds(seconds);
-                }
-                else
-                    MembershipExpirationDate = MembershipExpirationDate.Value.AddSeconds(seconds);
+                newExpirationDate = MembershipExpirationDate.Value.AddSeconds(seconds);
+            }
+
+            int durationFromNowInSeconds = (int)(newExpirationDate - DateTime.Now).TotalSeconds;
+
+            if (durationFromNowInSeconds > maxDurationInSeconds)
+            {
+                MembershipExpirationDate = DateTime.Now.AddSeconds(maxDurationInSeconds);
+            }
+            else
+            {
+                MembershipExpirationDate = newExpirationDate;
             }
         }
+
 
         public void SetCharacter(CharacterModel character)
         {

@@ -52,6 +52,9 @@ public class CashShopOnPurchasePacketProcessor : IGamePacketProcessor
                 purchasingItem.SetAmount(item.Quantity);
                 purchasingItem.SetItemInfo(_assetsLoader.ItemInfo.First(x => x.ItemId == item.ItemId));
                 client.Tamer.Inventory.AddItem(purchasingItem);
+                await _sender.Send(new UpdatePremiumAndSilkCommand(client.Premium,client.Silk, client.AccountId));
+
+
             }
         }
 
