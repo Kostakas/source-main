@@ -87,8 +87,7 @@ namespace DigitalWorldOnline.GameHost
 
                 MobsOperation(map,mob);
                 if(mob.RespawnInterval > 5 && mob.Class != 8) mob.RespawnInterval = int.Parse(_configuration["Monsters:RespawnTime"] ?? "0.1");
-                if(mob.RespawnInterval > 5 && mob.Class == 8) mob.RespawnInterval = int.Parse(_configuration["RaidBosses:RespawnTime"] ?? "0.1");
-                if(mob.Class != 8) mob.ATValue = int.Parse(_configuration["Monsters:AttackPower"] ?? "0.1") / 100;
+                if(mob.RespawnInterval > 3 && mob.Class == 8) mob.RespawnInterval = int.Parse(_configuration["RaidBosses:RespawnTime"] ?? "0.1");
                 mob.SetNextAction();
             }
 

@@ -730,30 +730,24 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                         client.Partner.ReceiveDamage(skill.SkillInfo.HPUsage);
                         // Retrieve the current DS usage value
-                        int dsUsage = client.Partner.UseDs(skill.SkillInfo.DSUsage);
-
                         // Determine the appropriate multiplier based on the value of skill.SkillInfo.DSUsage
                         int multiplier;
 
-                        if (skill.SkillInfo.DSUsage < 1000 && skill.SkillInfo.DSUsage < 3000)
+                        if (skill.SkillInfo.DSUsage >= 100 && skill.SkillInfo.DSUsage <= 600)
+                        {
+                            multiplier = 7;
+                        }
+                        else if (skill.SkillInfo.DSUsage >= 1000 && skill.SkillInfo.DSUsage <= 3000)
                         {
                             multiplier = 3;
                         }
-                        else if (skill.SkillInfo.DSUsage < 100 && skill.SkillInfo.DSUsage < 600)
-                        {
-                            multiplier = 6;
-                        }
                         else
                         {
-                            multiplier = 3; // Default multiplier if none of the conditions match
+                            multiplier = 4; // Default multiplier if none of the conditions match
                         }
 
-                        // Apply the multiplier
-                        int updatedDsUsage = dsUsage * multiplier;
-
                         // Update the DS value with the new multiplied value
-                        client.Partner.UseDs(updatedDsUsage);
-
+                        client.Partner.UseDs(skill.SkillInfo.DSUsage * multiplier);
 
                         var castingTime = (int)Math.Round((float)0);
                         if (castingTime <= 0) castingTime = 2000;
