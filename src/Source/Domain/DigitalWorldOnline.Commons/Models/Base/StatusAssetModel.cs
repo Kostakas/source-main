@@ -15,7 +15,7 @@
         /// <summary>
         /// Total Attack value.
         /// </summary>
-        public int ATValue { get; private set; }
+        public int ATValue { get;  set; }
 
         /// <summary>
         /// Total Block value.
