@@ -86,7 +86,8 @@ namespace DigitalWorldOnline.GameHost
                     continue;
 
                 MobsOperation(map,mob);
-
+                if(mob.RespawnInterval > 5 && mob.Class != 8) mob.RespawnInterval = int.Parse(_configuration["Monsters:RespawnTime"] ?? "0.1");
+                if(mob.RespawnInterval > 5 && mob.Class == 8) mob.RespawnInterval = int.Parse(_configuration["RaidBosses:RespawnTime"] ?? "0.1");
                 mob.SetNextAction();
             }
 
@@ -673,7 +674,7 @@ namespace DigitalWorldOnline.GameHost
                 double levelDifference = mob.Level - tamer.Partner.Level;
 
                 // Calculate additional multiplier based on level difference
-                long additionalMultiplier = (long)Math.Round(1 + levelDifference * 1);
+                long additionalMultiplier = (long)Math.Round(1 + levelDifference * 0.5);
 
                 // Calculate the base experience to receive
                 long partnerExpToReceive = (long)CalculateExperience(tamer.Partner.Level,mob.Level,mob.ExpReward.DigimonExperience);

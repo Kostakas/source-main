@@ -101,7 +101,7 @@ namespace DigitalWorldOnline.Commons.Models.Config
         /// <summary>
         /// Respawn interval in seconds.
         /// </summary>
-        public int RespawnInterval { get; private set; }
+        public int RespawnInterval { get;  set; }
 
         /// <summary>
         /// Initial location.
