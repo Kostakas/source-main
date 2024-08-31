@@ -159,7 +159,7 @@ namespace DigitalWorldOnline.GameHost
                         if (item.ItemInfo != null && item.IsTemporary && item.Expired)
                         {
                            
-                            if (item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3 )
+                            if (item.ItemInfo.UseTimeType == 1 || item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3 )
                             {
                                 item.SetFirstExpired(false);
 
@@ -181,7 +181,7 @@ namespace DigitalWorldOnline.GameHost
                         if (item.ItemInfo != null && item.IsTemporary && item.Expired)
                         {
 
-                            if (item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3)
+                            if (item.ItemInfo.UseTimeType == 1 || item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3)
                             {
                                 item.SetFirstExpired(false);
 
@@ -203,7 +203,7 @@ namespace DigitalWorldOnline.GameHost
                         if (item.ItemInfo != null && item.IsTemporary && item.Expired)
                         {
 
-                            if (item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3)
+                            if (item.ItemInfo.UseTimeType == 1 || item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3)
                             {
                                 item.SetFirstExpired(false);
 
@@ -224,7 +224,7 @@ namespace DigitalWorldOnline.GameHost
                         if (item.ItemInfo != null && item.IsTemporary && item.Expired)
                         {
                            
-                            if (item.ItemInfo.UseTimeType == 2)
+                            if (item.ItemInfo.UseTimeType == 1 || item.ItemInfo.UseTimeType == 2)
                             {
                                 item.SetFirstExpired(false);
 
@@ -244,12 +244,13 @@ namespace DigitalWorldOnline.GameHost
                     {
                         if (item.ItemInfo != null && item.IsTemporary && item.Expired)
                         {
-                          
-                            if (item.ItemInfo.UseTimeType == 2)
+
+                            if (item.ItemInfo.UseTimeType == 1 || item.ItemInfo.UseTimeType == 2 || item.ItemInfo.UseTimeType == 3)
                             {
                                 item.SetFirstExpired(false);
 
-                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabChipset, item.Slot, item.ItemId, ExpiredTypeEnum.Quit));
+                                client.Send(new ItemExpiredPacket(InventorySlotTypeEnum.TabChipset, item.Slot, item.ItemId, ExpiredTypeEnum.Remove));
+                                tamer.Equipment.RemoveOrReduceItem(item,item.Amount);
                             }
                             else
                             {
