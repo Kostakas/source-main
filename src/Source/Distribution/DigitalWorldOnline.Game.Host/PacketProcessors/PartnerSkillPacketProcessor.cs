@@ -695,12 +695,12 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     var targetMobs = new List<MobConfigModel>();
 
 
-
-                    if (skill.SkillInfo.AreaOfEffect > 0)
+                    var areaOfEffect = skill.SkillInfo.AreaOfEffect + int.Parse(_configuration["DigimonSkill:AreaOfEffect"] ?? "0.1");
+                    if ( areaOfEffect > 0)
                     {
                         skillType = SkillTypeEnum.Implosion;
 
-                        var targets = _mapServer.GetMobsNearbyPartner(client.Partner.Location, skill.SkillInfo.AreaOfEffect);
+                        var targets = _mapServer.GetMobsNearbyPartner(client.Partner.Location, areaOfEffect);
 
                         targetMobs.AddRange(targets);
                     }
