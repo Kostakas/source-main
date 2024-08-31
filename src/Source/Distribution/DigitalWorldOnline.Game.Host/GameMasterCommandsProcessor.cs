@@ -39,6 +39,8 @@ namespace DigitalWorldOnline.Game
         private readonly ILogger _logger;
         private readonly ISender _sender;
         private readonly IConfiguration _configuration;
+        private readonly BotController _botController;
+
 
         public GameMasterCommandsProcessor(
             PartyManager partyManager,
@@ -50,7 +52,8 @@ namespace DigitalWorldOnline.Game
             PvpServer pvpServer,
             ILogger logger,
             ISender sender,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            BotController botController)
         {
             _partyManager = partyManager;
             _expManager = expManager;
@@ -62,6 +65,7 @@ namespace DigitalWorldOnline.Game
             _logger = logger;
             _sender = sender;
             _configuration = configuration;
+            _botController = botController;
         }
 
         public async Task ExecuteCommand(GameClient client, string message)
@@ -126,6 +130,44 @@ namespace DigitalWorldOnline.Game
                             await _sender.Send(new UpdateItemListBitsCommand(client.Tamer.Inventory));
                             await _sender.Send(new UpdateItemsCommand(client.Tamer.Inventory));
                         }
+                    }
+                    break;
+                case "bot":
+                    if (command.Length > 1)
+                    {
+                        var subCommand = command[1];
+                        if (subCommand == "start")
+                        {
+                            if (_botController.IsBotting)
+                            {
+                                client.Send(new SystemMessagePacket("Botting is already activated."));
+                            }
+                            else
+                            {
+                                client.Send(new SystemMessagePacket("Botting started."));
+                                await _botController.ToggleBottingAsync(client,true);
+                            }
+                        }
+                        else if (subCommand == "stop")
+                        {
+                            if (!_botController.IsBotting)
+                            {
+                                client.Send(new SystemMessagePacket("Botting is already stopped."));
+                            }
+                            else
+                            {
+                                client.Send(new SystemMessagePacket("Botting stopped."));
+                                await _botController.ToggleBottingAsync(client,false);
+                            }
+                        }
+                        else
+                        {
+                            client.Send(new SystemMessagePacket("Invalid botting command. Use !botting start or !botting stop."));
+                        }
+                    }
+                    else
+                    {
+                        client.Send(new SystemMessagePacket("Please specify a botting command. Use !botting start or !botting stop."));
                     }
                     break;
 

@@ -92,6 +92,8 @@ namespace DigitalWorldOnline.Game
                     
                     services.AddScoped<IRoutineRepository, RoutineRepository>();
                     services.AddScoped<ICashShopRepository, CashShopRepository>();
+                    services.AddSingleton<BotController>();
+
 
                     //services.AddScoped<IEmailService, EmailService>();
 
