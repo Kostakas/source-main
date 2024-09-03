@@ -777,11 +777,12 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                             if (!client.Tamer.GodMode)
                             {
-                                //TODO: regra de 3 para redução de dano conforme distancia do ponto de origem
-                                if (skill.SkillInfo.AoEMinDamage > 0 && skill.SkillInfo.AoEMaxDamage > 0)
-                                    finalDmg = AoeDamage(client,client.Tamer, targetMobs.First(), skill, _assets.SkillCodeInfo.FirstOrDefault(x => x.SkillCode == skill.SkillId), skillSlot, _configuration);
-                                else
-                                    finalDmg = AoeDamage(client,client.Tamer, targetMobs.First(), skill, _assets.SkillCodeInfo.FirstOrDefault(x => x.SkillCode == skill.SkillId), skillSlot, _configuration);
+
+                                    //TODO: regra de 3 para redução de dano conforme distancia do ponto de origem
+                                    if (skill.SkillInfo.AoEMinDamage > 0 && skill.SkillInfo.AoEMaxDamage > 0 || skill.SkillInfo.FirstConditionCode > 0)
+                                        finalDmg = AoeDamage(client,targetMobs.First(),skill,skillSlot,_configuration);
+                                    else
+                                        finalDmg = AoeDamage(client,targetMobs.First(),skill,skillSlot,_configuration);
                             }
                             else
                                 finalDmg = int.MaxValue;
@@ -1276,21 +1277,22 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 return (int)(damage * (1.0 + percentageBonus));
             }
         }
-        private int AoeDamage(GameClient client, CharacterModel tamer, MobConfigModel? targetMob, DigimonSkillAssetModel? targetSkill, SkillCodeAssetModel? skillCode, byte skillSlot, IConfiguration configuration)
+        private int AoeDamage(GameClient client,MobConfigModel? targetMob,DigimonSkillAssetModel? targetSkill,byte skillSlot,IConfiguration configuration)
         {
+            var skillCode = _assets.SkillCodeInfo.FirstOrDefault(x => x.SkillCode == targetSkill.SkillId);
             var skill = _assets.DigimonSkillInfo.FirstOrDefault(x => x.Type == client.Partner.CurrentType && x.Slot == skillSlot);
             var skillValue = skillCode?.Apply.FirstOrDefault(x => x.Type > 0);
 
-            double f1BaseDamage = Math.Max(skillValue.Value , skill.SkillInfo.FirstConditionCode * 2 ) + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue * 3) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage, skill.SkillInfo.AoEMaxDamage);
+            double f1BaseDamage = Math.Max(skillValue.Value,skill.SkillInfo.FirstConditionCode * 2) + ((client.Partner.Evolutions.FirstOrDefault(x => x.Type == client.Partner.CurrentType).Skills[skillSlot].CurrentLevel) * skillValue.IncreaseValue * 3) + UtilitiesFunctions.RandomInt(skill.SkillInfo.AoEMinDamage,skill.SkillInfo.AoEMaxDamage);
 
-            double cloneFactor = Math.Round(1.0 + (2.43 / (144.0 / client.Tamer.Partner.Digiclone.ATValue)), 2);
+            double cloneFactor = Math.Round(1.0 + (2.43 / (144.0 / client.Tamer.Partner.Digiclone.ATValue)),2);
             f1BaseDamage = Math.Floor(f1BaseDamage * cloneFactor);
 
             //double addedf1Damage = Math.Floor(f1BaseDamage);
             int baseDamage = (int)Math.Floor(f1BaseDamage + client.Tamer.Partner.AT + client.Tamer.Partner.SCD);
 
-            double attributeMultiplier = GetAttributeDamageMultiplier(client, targetMob, tamer, _configuration);
-            double elementMultiplier = GetElementDamageMultiplier(client, targetMob, tamer, _configuration);
+            double attributeMultiplier = GetAttributeDamageMultiplier(client,targetMob,_configuration);
+            double elementMultiplier = GetElementDamageMultiplier(client,targetMob,_configuration);
 
             int attributeBonus = (int)Math.Floor(f1BaseDamage * attributeMultiplier);
             int elementBonus = (int)Math.Floor(f1BaseDamage * elementMultiplier);
@@ -1300,14 +1302,14 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 string message = $"Digimon's defence is way too high for skill";
 
                 // Broadcast the message
-                _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());
+                _mapServer.BroadcastForUniqueTamer(client.TamerId,new PartyMessagePacket(client.Tamer.Partner.Name,message).Serialize());
             }
             else if (totalDamage > 0)
             {
                 string message = $" Used {skill.SkillInfo.Name} and dealt {totalDamage} Skill DMG";
 
                 // Broadcast the message
-                _mapServer.BroadcastForUniqueTamer(client.TamerId, new PartyMessagePacket(client.Tamer.Partner.Name, message).Serialize());
+                _mapServer.BroadcastForUniqueTamer(client.TamerId,new PartyMessagePacket(client.Tamer.Partner.Name,message).Serialize());
 
             }
 
@@ -1317,7 +1319,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             return (int)(totalDamage * (1.0 + percentageBonus));
         }
 
-        private static double GetAttributeDamageMultiplier(GameClient client, MobConfigModel? targetMob, CharacterModel tamer, IConfiguration configuration)
+        private static double GetAttributeDamageMultiplier(GameClient client,MobConfigModel? targetMob,IConfiguration configuration)
         {
             double multiplier = 0.0;
             var gameConfig = new GameConfigurationModel();
@@ -1325,13 +1327,13 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             if (client.Tamer.Partner.BaseInfo.Attribute.HasAttributeAdvantage(targetMob.Attribute))
             {
-                double currentExperience = tamer.Partner.GetAttributeExperience();
+                double currentExperience = client.Tamer.Partner.GetAttributeExperience();
                 const double maxExperience = 10000;
 
                 double bonusMultiplier = currentExperience / maxExperience;
-                multiplier = Math.Min(bonusMultiplier, Double.Parse(configuration["GameConfigs:Attribute:AdvantageMultiplier"] ?? "0.1"));
+                multiplier = Math.Min(bonusMultiplier,Double.Parse(configuration["GameConfigs:Attribute:AdvantageMultiplier"] ?? "0.1"));
             }
-            else if (targetMob.Attribute.HasAttributeAdvantage(tamer.Partner.BaseInfo.Attribute))
+            else if (targetMob.Attribute.HasAttributeAdvantage(client.Tamer.Partner.BaseInfo.Attribute))
             {
                 multiplier = Double.Parse(configuration["GameConfigs:Attribute:DisAdvantageMultiplier"] ?? "0.1");
             }
@@ -1339,7 +1341,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             return multiplier;
         }
 
-        private static double GetElementDamageMultiplier(GameClient client, MobConfigModel? targetMob, CharacterModel tamer, IConfiguration configuration)
+        private static double GetElementDamageMultiplier(GameClient client,MobConfigModel? targetMob,IConfiguration configuration)
         {
             double multiplier = 0.0;
             var gameConfig = new GameConfigurationModel();
@@ -1347,20 +1349,19 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             if (client.Tamer.Partner.BaseInfo.Element.HasElementAdvantage(targetMob.Element))
             {
-                double currentExperience = tamer.Partner.GetElementExperience();
+                double currentExperience = client.Tamer.Partner.GetElementExperience();
                 const double maxExperience = 10000.0;
 
                 double bonusMultiplier = currentExperience / maxExperience;
-                multiplier = Math.Min(bonusMultiplier, Double.Parse(configuration["GameConfigs:Element:AdvantageMultiplier"] ?? "0.1"));
+                multiplier = Math.Min(bonusMultiplier,Double.Parse(configuration["GameConfigs:Element:AdvantageMultiplier"] ?? "0.1"));
             }
-            else if (targetMob.Element.HasElementAdvantage(tamer.Partner.BaseInfo.Element))
+            else if (targetMob.Element.HasElementAdvantage(client.Tamer.Partner.BaseInfo.Element))
             {
                 multiplier = Double.Parse(configuration["GameConfigs:Element:DisAdvantageMultiplier"] ?? "0.1");
             }
 
             return multiplier;
         }
-
     }
 
 }
