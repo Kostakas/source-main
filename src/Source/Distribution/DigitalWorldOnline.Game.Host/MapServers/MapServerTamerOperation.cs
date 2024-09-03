@@ -833,8 +833,10 @@ namespace DigitalWorldOnline.GameHost
             bool StopAttack2 = tamer.TargetMob == null || !tamer.TargetMob.Alive;
 
             if (StopAttack && StopAttack2)
+            {
                 tamer.Partner?.StopAutoAttack();
-
+                tamer.StopBattle();
+            }
 
         }
 
