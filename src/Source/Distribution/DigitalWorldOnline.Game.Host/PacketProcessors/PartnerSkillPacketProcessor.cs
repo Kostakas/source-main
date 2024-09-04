@@ -787,14 +787,20 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                             else
                                 finalDmg = int.MaxValue;
 
-                            targetMobs.ForEach(targetMob =>
+                            int remainingDamage = finalDmg;
+
+                            foreach (var targetMob in targetMobs)
                             {
-                                if (finalDmg <= 0) finalDmg = 1;
-                                if (finalDmg > targetMob.CurrentHP) finalDmg = targetMob.CurrentHP;
+                                if (remainingDamage <= 0) break; // Stop if there's no more damage to distribute
+
+                                int damageToApply = Math.Min(remainingDamage,targetMob.CurrentHP);
+
+                                if (damageToApply <= 0) damageToApply = 1; // Ensure at least 1 damage
+                                if (damageToApply > targetMob.CurrentHP) damageToApply = targetMob.CurrentHP; // Cap damage to target's current HP
 
                                 if (!targetMob.InBattle)
                                 {
-                                    _mapServer.BroadcastForTamerViewsAndSelf(client.TamerId, new SetCombatOnPacket(targetHandler).Serialize());
+                                    _mapServer.BroadcastForTamerViewsAndSelf(client.TamerId,new SetCombatOnPacket(targetHandler).Serialize());
                                     targetMob.StartBattle(client.Tamer);
                                 }
                                 else
@@ -802,17 +808,19 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                                     targetMob.AddTarget(client.Tamer);
                                 }
 
-                                var newHp = targetMob.ReceiveDamage(finalDmg, client.TamerId);
+                                var newHp = targetMob.ReceiveDamage(damageToApply,client.TamerId);
                                 if (newHp > 0)
                                 {
-                                    _logger.Verbose($"Partner {client.Partner.Id} inflicted {finalDmg} damage with skill {skill.SkillId} in mob {targetMob?.Id} - {targetMob?.Name}.");
+                                    _logger.Verbose($"Partner {client.Partner.Id} inflicted {damageToApply} damage with skill {skill.SkillId} on mob {targetMob?.Id} - {targetMob?.Name}.");
                                 }
                                 else
                                 {
-                                    _logger.Verbose($"Partner {client.Partner.Id} killed mob {targetMob?.Id} - {targetMob?.Name} with {finalDmg} skill {skill.Id} damage.");
+                                    _logger.Verbose($"Partner {client.Partner.Id} killed mob {targetMob?.Id} - {targetMob?.Name} with {damageToApply} damage from skill {skill.SkillId}.");
                                     targetMob?.Die();
                                 }
-                            });
+
+                                remainingDamage -= damageToApply; // Reduce remaining damage by the amount applied to the current mob
+                            }
 
                             _mapServer.BroadcastForTamerViewsAndSelf(
                                 client.TamerId,
