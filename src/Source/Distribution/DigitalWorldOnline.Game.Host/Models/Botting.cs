@@ -41,30 +41,31 @@ public class BotController
 
     private async Task StartBottingAsync(GameClient client,CancellationToken token)
     {
-        //// Task for continuous item pickup
-        //var itemPickupTask = Task.Run(async () =>
-        //{
-        //    while (!token.IsCancellationRequested)
-        //    {
-        //        if (client.Tamer.HasAura && client.Tamer.Aura.ItemInfo.Section != 2100)
-        //        {
-        //            IntPtr hWnd = KeySender.FindWindowByExecutableName("GDMO.exe");
-        //            if (hWnd != IntPtr.Zero)
-        //            {
-        //                await KeySender.SendKeyToWindowAsync(hWnd,0x34); // Pick up items number 4
-        //            }
-        //        }
-        //        if (client.Tamer.Partner.HpRate < 120 || client.Tamer.Partner.CurrentDs < 1)
-        //        {
-        //            IntPtr hWnd = KeySender.FindWindowByExecutableName("GDMO.exe");
-        //            if (hWnd != IntPtr.Zero)
-        //            {
-        //                await KeySender.SendKeyToWindowAsync(hWnd,0x37); //HEAL number 7
-        //            }
-        //        }
-        //        await Task.Delay(500); // Adjust the delay as needed
-        //    }
-        //},token);
+        // Task for continuous item pickup
+        var itemPickupTask = Task.Run(async () =>
+        {
+
+            while (!token.IsCancellationRequested)
+            {
+                //if (client.Tamer.HasAura && client.Tamer.Aura.ItemInfo.Section != 2100)
+                //{
+                //    IntPtr hWnd = KeySender.FindWindowByExecutableName("GDMO.exe");
+                //    if (hWnd != IntPtr.Zero)
+                //    {
+                //        await KeySender.SendKeyToWindowAsync(hWnd,0x34); // Pick up items number 4
+                //    }
+            //}
+                if (client.Tamer.Partner.HpRate < 120 || (client.Tamer.Partner.CurrentDs / (double)client.Tamer.Partner.DS) * 100 <  30)
+                {
+                    IntPtr hWnd = KeySender.FindWindowByExecutableName("GDMO.exe");
+                    if (hWnd != IntPtr.Zero)
+                    {
+                        await KeySender.SendKeyToWindowAsync(hWnd,0x37); //HEAL number 7
+                    }
+                }
+                await Task.Delay(500); // Adjust the delay as needed
+            }
+        },token);
 
         // Main botting loop
         while (isBotting)
@@ -113,8 +114,8 @@ public class BotController
             }
         }
 
-        // Ensure the item pickup task completes when botting stops
-        //await itemPickupTask;
+        //Ensure the item pickup task completes when botting stops
+       await itemPickupTask;
     }
 
 }
