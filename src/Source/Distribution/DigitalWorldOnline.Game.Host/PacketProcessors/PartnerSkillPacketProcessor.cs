@@ -707,8 +707,10 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     else if (areaOfEffect > 0 && skill.SkillInfo.Range > 700)
                     {
                         skillType = SkillTypeEnum.TargetArea;
+                        var aoeRange = skill.SkillInfo.Range;
+                        if (client.Tamer.Partner.Level < 65) aoeRange /= 2;
 
-                        var targets = _mapServer.GetMobsNearbyTargetMob(client.Tamer.Location.MapId, targetHandler, skill.SkillInfo.Range / 2);
+                        var targets = _mapServer.GetMobsNearbyTargetMob(client.Tamer.Location.MapId,targetHandler,aoeRange);
 
                         targetMobs.AddRange(targets);
                     }
