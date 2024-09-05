@@ -696,7 +696,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
 
                     var areaOfEffect = skill.SkillInfo.AreaOfEffect + int.Parse(_configuration["DigimonSkill:AreaOfEffect"] ?? "0.1");
-                    if ( areaOfEffect > 0)
+                    if ( areaOfEffect > 0 && skill.SkillInfo.Range < 700)
                     {
                         skillType = SkillTypeEnum.Implosion;
 
@@ -704,11 +704,11 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                         targetMobs.AddRange(targets);
                     }
-                    else if (skill.SkillInfo.AoEMaxDamage > 0)
+                    else if (areaOfEffect > 0 && skill.SkillInfo.Range > 700)
                     {
                         skillType = SkillTypeEnum.TargetArea;
 
-                        var targets = _mapServer.GetMobsNearbyTargetMob(client.Tamer.Location.MapId, targetHandler, skill.SkillInfo.Range / 10);
+                        var targets = _mapServer.GetMobsNearbyTargetMob(client.Tamer.Location.MapId, targetHandler, skill.SkillInfo.Range / 2);
 
                         targetMobs.AddRange(targets);
                     }

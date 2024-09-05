@@ -91,7 +91,7 @@ public class BotController
             {
                 await Task.Delay(1500); // Adding a delay to avoid rapid firing
                 await KeySender.SendKeyToWindowAsync(hWnd,0x09); // Send TAB key
-                await Task.Delay(600);
+                await Task.Delay(300);
                 await KeySender.SendKeyToWindowAsync(hWnd,0x31); // Perform action
 
                 // Return to the beginning of the loop to check conditions again
