@@ -912,7 +912,7 @@ namespace DigitalWorldOnline.GameHost
                     );
 
                     targetClient.Tamer.Inventory.AddBits(amount);
-
+                    _sender.Send(new UpdateItemListBitsCommand(targetClient.Tamer.Inventory));
                     _sender.Send(new UpdateItemsCommand(targetClient.Tamer.Inventory));
                     _logger.Verbose($"Character {targetClient.TamerId} aquired {amount} bits from mob {mob.Id} with magnetic aura {targetClient.Tamer.Aura.ItemId}.");
                 }
@@ -1744,6 +1744,7 @@ namespace DigitalWorldOnline.GameHost
                     );
 
                     targetClient.Tamer.Inventory.AddBits(amount);
+                    _sender.Send(new UpdateItemListBitsCommand(targetClient.Tamer.Inventory));
 
                     _sender.Send(new UpdateItemsCommand(targetClient.Tamer.Inventory));
                     _logger.Verbose($"Character {targetClient.TamerId} aquired {amount} bits from mob {mob.Id} with magnetic aura {targetClient.Tamer.Aura.ItemId}.");
