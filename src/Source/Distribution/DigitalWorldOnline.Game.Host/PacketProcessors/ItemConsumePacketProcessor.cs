@@ -555,6 +555,7 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                     count++;
 
                     var mob = (SummonMobModel)mobToAdd.Clone();
+                    mob.TamersViewing.Clear();
 
                     if (mob?.Location?.X != 0 && mob?.Location?.Y != 0)
                     {

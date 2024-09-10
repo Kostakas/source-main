@@ -114,14 +114,7 @@ namespace DigitalWorldOnline.GameHost
 
                                 var targetClient = map.Clients.FirstOrDefault(x => x.TamerId == nearTamer);
 
-                                targetClient?.Send(new LoadMobsPacket(mob));
-
-                            }
-                            else
-                            {
-                                var targetClient = map.Clients.FirstOrDefault(x => x.TamerId == nearTamer);
-
-                                targetClient?.Send(new LoadMobsPacket(mob, true));
+                                targetClient?.Send(new LoadMobsPacket(mob,true));
 
                             }
                         });
