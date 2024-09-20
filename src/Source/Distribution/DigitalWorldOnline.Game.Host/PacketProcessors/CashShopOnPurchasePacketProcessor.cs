@@ -7,6 +7,7 @@ using DigitalWorldOnline.Commons.Enums.ClientEnums;
 using DigitalWorldOnline.Commons.Enums.PacketProcessor;
 using DigitalWorldOnline.Commons.Interfaces;
 using DigitalWorldOnline.Commons.Models.Base;
+using DigitalWorldOnline.Commons.Packets.GameServer.Combat;
 using DigitalWorldOnline.Commons.Packets.Items;
 using DigitalWorldOnline.Commons.Writers;
 using MediatR;
@@ -51,15 +52,16 @@ public class CashShopOnPurchasePacketProcessor : IGamePacketProcessor
                 purchasingItem.SetItemId(item.ItemId); 
                 purchasingItem.SetAmount(item.Quantity);
                 purchasingItem.SetItemInfo(_assetsLoader.ItemInfo.First(x => x.ItemId == item.ItemId));
-                client.Tamer.Inventory.AddItem(purchasingItem);
+                client.Tamer.AccountCashWarehouse.AddItem(purchasingItem);
                 await _sender.Send(new UpdatePremiumAndSilkCommand(client.Premium,client.Silk, client.AccountId));
 
 
             }
         }
+        await _sender.Send(new UpdateItemsCommand(client.Tamer.AccountCashWarehouse));
 
         await _sender.Send(new UpdateItemsCommand(client.Tamer.Inventory));
-        
+        client.Send(new LoadAccountWarehousePacket(client.Tamer.AccountCashWarehouse));
         client.Send(new LoadInventoryPacket(client.Tamer.Inventory, InventoryTypeEnum.Inventory));
         client.Send(new CashShopSuccessPurchasePacket(client.Premium, (short)client.Silk));
     }
