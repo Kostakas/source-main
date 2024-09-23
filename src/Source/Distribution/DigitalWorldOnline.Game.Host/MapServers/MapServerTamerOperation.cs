@@ -1260,9 +1260,9 @@ namespace DigitalWorldOnline.GameHost
         {
             if (client.Tamer.AttendanceReward.ReedemRewards)
             {
-                //client.Tamer.AttendanceReward.SetLastRewardDate();
-                //client.Tamer.AttendanceReward.IncreaseTotalDays();
-                //ReedemReward(client);
+                client.Tamer.AttendanceReward.SetLastRewardDate();
+                client.Tamer.AttendanceReward.IncreaseTotalDays();
+                ReedemReward(client);
             }
 
 
