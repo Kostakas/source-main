@@ -54,7 +54,7 @@ namespace DigitalWorldOnline.GameHost
                 client.Send(packet);
                 PartnerAutoAttack(tamer, client);
 
-                CheckMonthlyReward(client);
+                //CheckMonthlyReward(client);
 
                 CheckEvolution(client);
 

@@ -36,24 +36,26 @@ namespace DigitalWorldOnline.Infraestructure.Repositories.Server
                      .OrderByDescending(x => x.Id)
                      .FirstOrDefaultAsync();
 
-            if(latestItem != null)
+            if (latestItem != null)
             {
-                dto.SetGeneralHandler(latestItem.Id);
+                dto.SetGeneralHandler(latestItem.Id + 1);
             }
             else
             {
-                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('[DSO.Shop.ConsignedShop]', RESEED, 0)");
-                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('[DSO.Shop.Location]', RESEED, 0)");
+                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('[Shop].[ConsignedShop]', RESEED, 0)");
+                _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('[Shop].[Location]', RESEED, 0)");
                 dto.SetGeneralHandler();
+
             }
-
-            _context.CharacterConsignedShop.Add(dto);
-            _context.SaveChanges();
-
-
-
-
-
+            try
+            {
+                _context.CharacterConsignedShop.Add(dto);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("error saving at database: " + ex.InnerException?.Message);
+            }
             return dto;
         }
 
