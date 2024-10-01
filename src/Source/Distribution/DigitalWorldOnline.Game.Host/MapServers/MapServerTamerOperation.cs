@@ -58,7 +58,7 @@ namespace DigitalWorldOnline.GameHost
 
                  _timeRewardService.LoadTimeRewardState(client);
 
-                //CheckMonthlyReward(client);
+                CheckMonthlyReward(client);
 
                 CheckEvolution(client);
 
@@ -1269,9 +1269,7 @@ namespace DigitalWorldOnline.GameHost
                 ReedemReward(client);
             }
 
-
             client.Send(new TamerAttendancePacket(client.Tamer.AttendanceReward.TotalDays));
-
         }
 
         private void ReedemReward(GameClient client)
@@ -1285,8 +1283,6 @@ namespace DigitalWorldOnline.GameHost
 
                 if (newItem.ItemInfo == null)
                 {
-                    //_logger.Warning($"No item info found with ID {itemId} for tamer {client.TamerId}.");
-                    //client.Send(new SystemMessagePacket($"No item info found with ID {itemId}."));
                     return;
                 }
 
@@ -1298,15 +1294,13 @@ namespace DigitalWorldOnline.GameHost
 
                 var itemClone = (ItemModel)newItem.Clone();
 
-                if (client.Tamer.AccountCashWarehouse.AddItem(newItem))
+                if (client.Tamer.GiftWarehouse.AddItem(newItem))
                 {
-                    _sender.Send(new UpdateItemsCommand(client.Tamer.AccountCashWarehouse));
+                    _sender.Send(new UpdateItemsCommand(client.Tamer.ca));
                 }
 
                 _sender.Send(new UpdateTamerAttendanceRewardCommand(client.Tamer.AttendanceReward));
             }
-
-
         }
 
     }
