@@ -6,21 +6,21 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DigitalWorldOnline.Infraestructure.ContextConfiguration.Event
 {
-    public class TimeRewardConfiguration : IEntityTypeConfiguration<TimeRewardDTO>
+    public class TimeRewardConfiguration :IEntityTypeConfiguration<TimeRewardDTO>
     {
         public void Configure(EntityTypeBuilder<TimeRewardDTO> builder)
         {
             builder
-                .ToTable("TimeReward", "Event")
+                .ToTable("TimeReward","Event")
                 .HasKey(x => x.Id);
 
             builder
                 .Property(x => x.RewardIndex)
                 .HasColumnType("int")
-                .HasConversion(new ValueConverter<TimeRewardIndexEnum, int>(
+                .HasConversion(new ValueConverter<TimeRewardIndexEnum,int>(
                     x => (int)x,
                     x => (TimeRewardIndexEnum)x))
-                .HasDefaultValue(TimeRewardIndexEnum.First)
+                .HasDefaultValue(TimeRewardIndexEnum.Ended)
                 .IsRequired();
 
             builder

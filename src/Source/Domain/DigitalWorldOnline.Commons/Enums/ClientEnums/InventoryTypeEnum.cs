@@ -4,6 +4,7 @@
     {
         Inventory = 0,
         Warehouse = 1,
-        AccountWarehouse = 2
+        AccountWarehouse = 2,
+        GiftWarehouse = 3
     }
 }

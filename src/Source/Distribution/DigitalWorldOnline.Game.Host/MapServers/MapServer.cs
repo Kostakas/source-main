@@ -5,6 +5,7 @@ using DigitalWorldOnline.Game.Managers;
 using MediatR;
 using Serilog;
 using Microsoft.Extensions.Configuration;
+using DigitalWorldOnline.Game.Models.Configuration;
 
 namespace DigitalWorldOnline.GameHost
 {
@@ -20,6 +21,7 @@ namespace DigitalWorldOnline.GameHost
         private readonly ISender _sender;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly TimeRewardService _timeRewardService;
 
         public List<GameMap> Maps { get; set; }
 
@@ -33,7 +35,8 @@ namespace DigitalWorldOnline.GameHost
             ILogger logger,
             ISender sender,
             IMapper mapper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            TimeRewardService timeRewardService)
         {
             _partyManager = partyManager;
             _statusManager = statusManager;
@@ -45,6 +48,7 @@ namespace DigitalWorldOnline.GameHost
             _sender = sender;
             _mapper = mapper;
             _configuration = configuration;
+            _timeRewardService = timeRewardService;
 
             Maps = new List<GameMap>();
         }

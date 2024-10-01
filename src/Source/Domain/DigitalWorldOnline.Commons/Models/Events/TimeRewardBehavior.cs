@@ -5,6 +5,23 @@ namespace DigitalWorldOnline.Commons.Models
 {
     public sealed partial class TimeReward
     {
+        public DateTime LastTimeRewardUpdate = DateTime.Now;
+
+        private int _currentTime = 0;
+
+        public int CurrentTime
+        {
+            get
+            {
+                return _currentTime;
+            }
+
+            set
+            {
+                _currentTime = value;
+            }
+        }
+
         public int RemainingTime
         {
             get
@@ -14,38 +31,32 @@ namespace DigitalWorldOnline.Commons.Models
                     default: return -1;
 
                     case TimeRewardIndexEnum.First:
+                        return (int)(TimeRewardDurationEnum.First - CurrentTime);
                     case TimeRewardIndexEnum.Second:
+                        return (int)(TimeRewardDurationEnum.Second - CurrentTime);
                     case TimeRewardIndexEnum.Third:
+                        return (int)(TimeRewardDurationEnum.Third - CurrentTime);
                     case TimeRewardIndexEnum.Fourth:
-                        return (int)(StartTime - DateTime.Now).TotalSeconds;
+                        return (int)(TimeRewardDurationEnum.Fourth - CurrentTime);
                 }
             }
         }
 
-        public void UpdateRewardIndex()
+        public void SetLastTimeRewardDate()
         {
-            switch (RewardIndex)
+            LastTimeRewardUpdate = DateTime.Now;
+        }
+
+        public bool TimeCompleted()
+        {
+            return RewardIndex switch
             {
-                case TimeRewardIndexEnum.First:
-                    RewardIndex = TimeRewardIndexEnum.Second;
-                    StartTime = DateTime.Now.AddSeconds(TimeRewardDurationEnum.Second.GetHashCode());
-                    break;
-
-                case TimeRewardIndexEnum.Second:
-                    RewardIndex = TimeRewardIndexEnum.Third;
-                    StartTime = DateTime.Now.AddSeconds(TimeRewardDurationEnum.Third.GetHashCode());
-                    break;
-
-                case TimeRewardIndexEnum.Third:
-                    RewardIndex = TimeRewardIndexEnum.Fourth;
-                    StartTime = DateTime.Now.AddSeconds(TimeRewardDurationEnum.Fourth.GetHashCode());
-                    break;
-
-                case TimeRewardIndexEnum.Fourth:
-                    RewardIndex = TimeRewardIndexEnum.Ended;
-                    StartTime = DateTime.Now.AddSeconds(TimeRewardDurationEnum.Ended.GetHashCode());
-                    break;
-            }
+                TimeRewardIndexEnum.First => CurrentTime >= (int)TimeRewardDurationEnum.First,
+                TimeRewardIndexEnum.Second => CurrentTime >= (int)TimeRewardDurationEnum.Second,
+                TimeRewardIndexEnum.Third => CurrentTime >= (int)TimeRewardDurationEnum.Third,
+                TimeRewardIndexEnum.Fourth => CurrentTime >= (int)TimeRewardDurationEnum.Fourth,
+                _ => false,
+            };
         }
     }
 }

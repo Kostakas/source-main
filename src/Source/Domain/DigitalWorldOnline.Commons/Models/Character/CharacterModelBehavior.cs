@@ -1845,11 +1845,8 @@ namespace DigitalWorldOnline.Commons.Models.Character
         /// </summary>
         public void UpdateTimeReward()
         {
-            if (DateTime.Now >= TimeRewardUpdate.AddSeconds(30))
-            {
-                TimeReward.UpdateRewardIndex();
-                TimeRewardUpdate = DateTime.Now;
-            }
+            TimeReward.RewardIndex++;
+            TimeReward.CurrentTime = 0;
         }
 
         /// <summary>

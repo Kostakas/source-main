@@ -22,7 +22,7 @@ namespace DigitalWorldOnline.Commons.Models
         /// <summary>
         /// The reward current index and duration.
         /// </summary>
-        public TimeRewardIndexEnum RewardIndex { get; private set; }
+        public TimeRewardIndexEnum RewardIndex { get;  set; }
 
         public TimeReward()
         {
