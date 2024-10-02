@@ -135,7 +135,8 @@ END";
                             client.Tamer.TimeReward.RewardIndex = TimeRewardIndexEnum.Ended;
                         }
                     }
-                    client.Send(new TimeRewardPacket(client.Tamer.TimeReward));
+                    client.Send(new TimeRewardPacket(client.Tamer.TimeReward,1));
+
                 }
                 client.Tamer.TimeReward.SetLastTimeRewardDate();
             }

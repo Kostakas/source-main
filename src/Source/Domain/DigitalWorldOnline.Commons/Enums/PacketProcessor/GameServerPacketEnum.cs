@@ -4,6 +4,12 @@ namespace DigitalWorldOnline.Commons.Enums.PacketProcessor
 {
     public enum GameServerPacketEnum
     {
+
+        // <summary>
+        ////REWARD STORAGE.
+        /// </summary>
+        RewardStorage = 16001,
+
         /// <summary>
         /// Unknown packet
         /// </summary>

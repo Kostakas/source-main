@@ -33,38 +33,34 @@ namespace DigitalWorldOnline.Game.PacketProcessors
             var packet = new GamePacketReader(packetData);
             var inventorySlot = packet.ReadShort();
             var amount = packet.ReadShort();
-            var tradeSlot = -1;
+            var slotAtual = client.Tamer.TradeInventory.EquippedItems.Count;
 
             var targetClient = _mapServer.FindClientByTamerHandle(client.Tamer.TargetTradeGeneralHandle);
 
-
             var Item = client.Tamer.Inventory.FindItemBySlot(inventorySlot);
 
+            var firstTamerItems = client.Tamer.TradeInventory.EquippedItems.Select(x => $"{x.ItemId} x{x.Amount}");
+            var secondTamerItems = targetClient.Tamer.TradeInventory.EquippedItems.Select(x => $"{x.ItemId} x{x.Amount}");
+
+            var EmptSlot = client.Tamer.TradeInventory.GetEmptySlot;
 
             var NewItem = (ItemModel)Item.Clone();
             NewItem.Amount = amount;
 
-            client.Tamer.TradeInventory.AddItem(NewItem);
-
             foreach (var item in client.Tamer.TradeInventory.Items)
             {
-                tradeSlot++;
-                if (item.Id == NewItem.Id)
+                if (EmptSlot != -1)
                 {
-                    item.SetTradeSlot(tradeSlot);
+                    client.Tamer.TradeInventory.AddItem(NewItem);
                     break;
                 }
             }
 
+            client.Send(new TradeAddItemPacket(client.Tamer.GeneralHandler, NewItem.ToArray(), (byte)EmptSlot, inventorySlot));
+            targetClient.Send(new TradeAddItemPacket(client.Tamer.GeneralHandler, NewItem.ToArray(), (byte)EmptSlot, inventorySlot));
 
             targetClient.Send(new TradeInventoryUnlockPacket(client.Tamer.TargetTradeGeneralHandle));
             client.Send(new TradeInventoryUnlockPacket(client.Tamer.TargetTradeGeneralHandle));
-
-            client.Send(new TradeAddItemPacket(client.Tamer.GeneralHandler, NewItem.ToArray(), (byte)tradeSlot, inventorySlot));
-            targetClient.Send(new TradeAddItemPacket(client.Tamer.GeneralHandler, NewItem.ToArray(), (byte)tradeSlot, inventorySlot));
-
-            //_logger.Verbose($"Character {client.TamerId} and {targetClient.TamerId} inventory unlock "); ;
-
         }
     }
 }

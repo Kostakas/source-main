@@ -38,7 +38,6 @@ namespace DigitalWorldOnline.Game.PacketProcessors
         {
             var targetClient = _mapServer.FindClientByTamerHandle(client.Tamer.TargetTradeGeneralHandle);
 
-
             client.Send(new TradeConfirmationPacket(client.Tamer.GeneralHandler));
             targetClient.Send(new TradeConfirmationPacket(client.Tamer.GeneralHandler));
             client.Tamer.SetTradeConfirm(true);
@@ -48,14 +47,12 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 if (client.Tamer.Inventory.TotalEmptySlots < targetClient.Tamer.TradeInventory.Count)
                 {
                     InvalidTrade(client, targetClient);
-
                     return;
 
                 }
                 else if (targetClient.Tamer.Inventory.TotalEmptySlots < client.Tamer.TradeInventory.Count)
                 {
                     InvalidTrade(client, targetClient);
-
                     return;
                 }
 
@@ -63,29 +60,37 @@ namespace DigitalWorldOnline.Game.PacketProcessors
                 var secondTamerItems = targetClient.Tamer.TradeInventory.EquippedItems.Select(x => $"{x.ItemId} x{x.Amount}");
                 var firstTamerBits = client.Tamer.TradeInventory.Bits;
                 var secondTamerBits = targetClient.Tamer.TradeInventory.Bits;
-              
+
                 _logger.Verbose($"Character {client.TamerId} traded {string.Join('|', firstTamerItems)} and {firstTamerBits} with {targetClient.TamerId}.");
                 _logger.Verbose($"Character {targetClient.TamerId} traded {string.Join('|', secondTamerItems)} and {secondTamerBits} with {client.TamerId}.");
-               
-                targetClient.Tamer.Inventory.AddItems(client.Tamer.TradeInventory.EquippedItems.Clone());
-                client.Tamer.Inventory.RemoveOrReduceItems(client.Tamer.TradeInventory.EquippedItems.Clone());
 
-                client.Tamer.Inventory.AddItems(targetClient.Tamer.TradeInventory.EquippedItems.Clone());
-                targetClient.Tamer.Inventory.RemoveOrReduceItems(targetClient.Tamer.TradeInventory.EquippedItems.Clone());
+                #region ITEM TRADE
 
+                if (client.Tamer.TradeInventory.Count > 0) client.Tamer.Inventory.RemoveOrReduceItems(client.Tamer.TradeInventory.EquippedItems.Clone());
+                if (targetClient.Tamer.TradeInventory.Count > 0) targetClient.Tamer.Inventory.RemoveOrReduceItems(targetClient.Tamer.TradeInventory.EquippedItems.Clone());
+                if (targetClient.Tamer.TradeInventory.Count > 0) client.Tamer.Inventory.AddItems(targetClient.Tamer.TradeInventory.EquippedItems.Clone());
+                if (client.Tamer.TradeInventory.Count > 0) targetClient.Tamer.Inventory.AddItems(client.Tamer.TradeInventory.EquippedItems.Clone());
 
-                targetClient.Tamer.Inventory.AddBits(client.Tamer.TradeInventory.Bits);
-                client.Tamer.Inventory.RemoveBits(client.Tamer.TradeInventory.Bits);
+                #endregion
 
+                #region BITS TRADE
 
-               client.Tamer.Inventory.AddBits(targetClient.Tamer.TradeInventory.Bits);
-               targetClient.Tamer.Inventory.RemoveBits(targetClient.Tamer.TradeInventory.Bits);
+                if (client.Tamer.TradeInventory.Bits >= 1) // LOGICA TRADE TAMER DONO DA TRADE PASSANDO BITS
+                {
+                    client.Tamer.Inventory.RemoveBits(client.Tamer.TradeInventory.Bits);
+                    targetClient.Tamer.Inventory.AddBits(client.Tamer.TradeInventory.Bits);
+                }
+
+                if (targetClient.Tamer.TradeInventory.Bits >= 1) // LOGICA TRADE TAMER DONO DA TRADE RECEBENDO BITS
+                {
+                    targetClient.Tamer.Inventory.RemoveBits(targetClient.Tamer.TradeInventory.Bits);
+                    client.Tamer.Inventory.AddBits(targetClient.Tamer.TradeInventory.Bits);
+                }
+
+                #endregion
 
                 targetClient.Tamer.ClearTrade();
                 client.Tamer.ClearTrade();
-
-                client.Send(new LoadInventoryPacket(client.Tamer.Inventory, InventoryTypeEnum.Inventory));
-                targetClient.Send(new LoadInventoryPacket(targetClient.Tamer.Inventory, InventoryTypeEnum.Inventory));
 
                 client.Send(new TradeFinalConfirmationPacket(client.Tamer.GeneralHandler));
                 targetClient.Send(new TradeFinalConfirmationPacket(client.Tamer.GeneralHandler));
@@ -95,6 +100,9 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
                 await _sender.Send(new UpdateItemsCommand(client.Tamer.Inventory));
                 await _sender.Send(new UpdateItemListBitsCommand(client.Tamer.Inventory));
+
+                client.Send(new LoadInventoryPacket(client.Tamer.Inventory, InventoryTypeEnum.Inventory));
+                targetClient.Send(new LoadInventoryPacket(targetClient.Tamer.Inventory, InventoryTypeEnum.Inventory));
             }
         }
 
@@ -106,6 +114,8 @@ namespace DigitalWorldOnline.Game.PacketProcessors
 
             targetClient.Tamer.ClearTrade();
             client.Tamer.ClearTrade();
+
+
         }
     }
 
