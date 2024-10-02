@@ -1296,7 +1296,7 @@ namespace DigitalWorldOnline.GameHost
 
                 if (client.Tamer.GiftWarehouse.AddItem(newItem))
                 {
-                    _sender.Send(new UpdateItemsCommand(client.Tamer.ca));
+                    _sender.Send(new UpdateItemsCommand(client.Tamer.GiftWarehouse));
                 }
 
                 _sender.Send(new UpdateTamerAttendanceRewardCommand(client.Tamer.AttendanceReward));
