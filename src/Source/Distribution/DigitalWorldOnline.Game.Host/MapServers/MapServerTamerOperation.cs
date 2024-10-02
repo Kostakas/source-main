@@ -54,9 +54,10 @@ namespace DigitalWorldOnline.GameHost
                 client.Send(packet);
                 PartnerAutoAttack(tamer, client);
 
+                _timeRewardService.LoadTimeRewardState(client);
                 _timeRewardService.CheckTimeReward(client);
 
-                 _timeRewardService.LoadTimeRewardState(client);
+
 
                 CheckMonthlyReward(client);
 
